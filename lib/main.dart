@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_port_taxi/pages/register.dart';
 
-import 'const/color.dart';
+import 'config/color.dart';
 import 'pages/home.dart';
 import 'pages/my.dart';
 

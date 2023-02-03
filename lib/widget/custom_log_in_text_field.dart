@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../const/color.dart';
+import '../config/color.dart';
 class CustomLogInTextField extends StatelessWidget {
 
   final IconData icon;

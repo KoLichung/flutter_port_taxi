@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_port_taxi/widget/car_number_tag.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'dart:async';
-import '../const/color.dart';
+import '../config/color.dart';
+import '../config/service_api.dart';
 import 'my.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,11 +20,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(child: pageCaller(_selectedIndex),),
 
@@ -48,6 +54,7 @@ class _HomeState extends State<Home> {
       case 1:{return const My();}
     }
   }
+
 }
 
 class HomeLayout extends StatefulWidget {
@@ -67,29 +74,25 @@ class _HomeLayoutState extends State<HomeLayout> {
   TextEditingController pickUpAddressController = TextEditingController();
   TextEditingController dropOffAddressController = TextEditingController();
 
-  late GoogleMapController mapController;
-  final LatLng _center = const LatLng(45.521563, -122.677433);
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+  String geocodingKey = 'AIzaSyCdP86OffSMXL82nbHA0l6K0W2xrdZ5xLk';
+
+  LatLng? currentPosition;
+  double? currentLat;
+  double? currentLong;
+
+  void _getUserLocation() async {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      currentPosition = LatLng(position.latitude, position.longitude);
+      currentLat = position.latitude;
+      currentLong = position.longitude;
+      print('currentLat: $currentLat');
+      print('currentLong: $currentLong');
+    });
   }
 
-
-
-  final Completer<GoogleMapController> _controller =
-  Completer<GoogleMapController>();
-
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(25.0339206,121.5636985),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
+  //待修改
   void _callButtonCallback() {
     setState(() {
       isCallTaxiClicked = true;
@@ -104,9 +107,8 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    pickUpAddressController.text = '桃園區民族路1號';
+    _getUserLocation();
   }
 
   @override
@@ -114,20 +116,15 @@ class _HomeLayoutState extends State<HomeLayout> {
     return Scaffold(
       body: Center(
         child: Container(
-          // child: GoogleMap(
-          //   initialCameraPosition: _kGooglePlex,
-          //   onMapCreated: (GoogleMapController controller) {
-          //     _controller.complete(controller);
-          //   },
-          //
-          // ),
-          child: GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(
-              target: _center,
-              zoom: 11.0,
-            ),
-          ),
+          child: currentPosition == null
+              ? const CircularProgressIndicator(color: AppColor.blue,)
+              : GoogleMap(
+                  myLocationEnabled: true,
+                  initialCameraPosition: CameraPosition(
+                    target: currentPosition!,
+                    zoom: 16,
+                  ),
+                ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -151,7 +148,7 @@ class _HomeLayoutState extends State<HomeLayout> {
             Expanded(
               flex: 2,
               child: Container(
-                  padding: const EdgeInsets.fromLTRB(10,0,10,6),
+                  padding: const EdgeInsets.fromLTRB(10,0,10,0),
                   height: 35,
                   decoration: BoxDecoration(
                       color: AppColor.lightGrey,
@@ -160,7 +157,11 @@ class _HomeLayoutState extends State<HomeLayout> {
                   child: TextField(
                     style: const TextStyle(fontSize: 14),
                     controller: pickUpAddressController,
-                    decoration: const InputDecoration(border: InputBorder.none),
+                    decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.only(bottom: 14),
+                        hintStyle: TextStyle(fontSize: 14),
+                        hintText: '按右方按鈕取得目前地址',
+                        border: InputBorder.none),
                   )
               ),
             ),
@@ -177,7 +178,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                             borderRadius: BorderRadius.circular(15)
                         )
                     ),
-                    onPressed: isAllowGetLocation == true ? (){} : null,
+                    onPressed: isAllowGetLocation == true ? (){getHttpConvertToAddress(currentLat!, currentLong!);} : null,
                     child: const Text('取得當前位置')
 
                 ),
@@ -343,6 +344,7 @@ class _HomeLayoutState extends State<HomeLayout> {
     }
   }
 
+  //待修改
   getStatusLayout(int index){
     if (index == 0){
       return statusCaller(0);
@@ -352,5 +354,26 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   }
 
+  Future getHttpConvertToAddress(double lat, double long) async{
+    //如果是英文使用者語言要把 &language=zh-TW 刪掉
+    String path = '${ServiceApi.currentAddress}$lat,$long&key=$geocodingKey&language=zh-TW';
+    // String path = '${ServiceApi.currentAddress}25.03369,121.564128&key=$geocodingKey&language=zh-TW';
+
+    try {
+      final response = await http.get(Uri.parse(path));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        print(data['status']);
+        print(data['results'][0]['formatted_address']);
+        setState(() {
+          pickUpAddressController.text=data['results'][0]['formatted_address'];
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 }
+
+
 

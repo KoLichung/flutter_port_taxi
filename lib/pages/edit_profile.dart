@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../const/color.dart';
+import '../config/color.dart';
 import '../widget/custom_edit_profile_text_field.dart';
 
 class EditProfile extends StatefulWidget {

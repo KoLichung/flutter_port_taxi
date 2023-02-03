@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_port_taxi/widget/car_number_tag.dart';
 
-import '../const/color.dart';
+import '../config/color.dart';
 
 class RideRecordDetail extends StatelessWidget {
 

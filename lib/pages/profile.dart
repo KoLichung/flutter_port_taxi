@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_port_taxi/const/color.dart';
+import 'package:flutter_port_taxi/config/color.dart';
 import 'package:flutter_port_taxi/pages/edit_profile.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'package:flutter_port_taxi/widget/custom_profile_text_unit.dart';

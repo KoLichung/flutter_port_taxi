@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_port_taxi/const/color.dart';
+import 'package:flutter_port_taxi/config/color.dart';
 import 'package:flutter_port_taxi/pages/register.dart';
 
 import '../widget/custom_edit_profile_text_field.dart';

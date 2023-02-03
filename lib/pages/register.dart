@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../const/color.dart';
+import '../config/color.dart';
 import '../widget/custom_fixed_width_elevated_button.dart';
 import '../widget/custom_log_in_text_field.dart';
 import 'home.dart';

@@ -21,51 +21,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  int _selectedIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(child: pageCaller(_selectedIndex),),
-
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: _selectedIndex == 0 ? 0 : 8,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xffFCFCFC),
-        selectedItemColor: AppColor.blue,
-        unselectedItemColor: const Color(0xff737273),
-        currentIndex: _selectedIndex,
-        onTap: (int index){
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.local_taxi_rounded), label: '叫車'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle_rounded), label: '我的'),
-        ],
-      ),
-    );
-  }
-
-  pageCaller(int index){
-    switch(index){
-      case 0:{return const HomeLayout();}
-      case 1:{return const My();}
-    }
-  }
-
-}
-
-class HomeLayout extends StatefulWidget {
-  const HomeLayout({Key? key}) : super(key: key);
-
-  @override
-  State<HomeLayout> createState() => _HomeLayoutState();
-}
-
-class _HomeLayoutState extends State<HomeLayout> {
-
   int _statusCallerIndex = 0;
 
   bool isEngDriverNeeded = false;
@@ -77,7 +32,7 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   String geocodingKey = 'AIzaSyCdP86OffSMXL82nbHA0l6K0W2xrdZ5xLk';
 
-  LatLng? currentPosition;
+  // LatLng? currentPosition;
   double? currentLat;
   double? currentLong;
 
@@ -86,7 +41,8 @@ class _HomeLayoutState extends State<HomeLayout> {
     permission = await Geolocator.requestPermission();
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     setState(() {
-      currentPosition = LatLng(position.latitude, position.longitude);
+      var userModel = context.read<UserModel>();
+      userModel.currentPosition = LatLng(position.latitude, position.longitude);
       currentLat = position.latitude;
       currentLong = position.longitude;
       print('currentLat: $currentLat');
@@ -126,15 +82,18 @@ class _HomeLayoutState extends State<HomeLayout> {
     return Scaffold(
       body: Center(
         child: Container(
-          child: currentPosition == null
-              ? const CircularProgressIndicator(color: AppColor.blue,)
-              : GoogleMap(
-                  myLocationEnabled: true,
-                  initialCameraPosition: CameraPosition(
-                    target: currentPosition!,
-                    zoom: 16,
-                  ),
-                ),
+          child:Consumer<UserModel>(builder: (context, userModel, child) =>
+            (userModel.currentPosition==null)?
+            const CircularProgressIndicator(color: AppColor.blue,)
+                :
+            GoogleMap(
+              myLocationEnabled: true,
+              initialCameraPosition: CameraPosition(
+                target: userModel.currentPosition!,
+                zoom: 16,
+              ),
+            ),
+          )
         ),
       ),
       bottomNavigationBar: Container(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_port_taxi/main.dart';
 import '../config/color.dart';
 import '../config/server_api.dart';
 import '../models/user.dart';
@@ -77,7 +78,7 @@ class _RegisterState extends State<Register> {
                       isLoading = true;
                       setState(() {});
                     }
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Home()), (Route<dynamic> route) => false, );
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const TabPage()), (Route<dynamic> route) => false, );
                   },
                 ),
                 const SizedBox(height: 10,),

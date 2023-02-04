@@ -40,56 +40,54 @@ class MyApp extends StatelessWidget {
       // home: Register(),
       home: LogIn(),
       routes: {
+        '/main':(context) => const TabPage(),
         '/log_in':(context) => const LogIn(),
       },
     );
   }
 }
 
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({super.key, });
-//
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-//
-// class _MyHomePageState extends State<MyHomePage> {
-//   int _selectedIndex = 0;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: pageCaller(_selectedIndex),
-//       ),
-//       bottomNavigationBar: Container(
-//         decoration: const BoxDecoration(
-//           border: Border(top: BorderSide(color: AppColor.blue, width: 0.8)),
-//         ),
-//         child: BottomNavigationBar(
-//           type: BottomNavigationBarType.fixed,
-//           backgroundColor: const Color(0xffFCFCFC),
-//           selectedItemColor: AppColor.blue,
-//           unselectedItemColor: const Color(0xff737273),
-//           currentIndex: _selectedIndex,
-//           onTap: (int index){
-//             setState(() {
-//               _selectedIndex = index;
-//             });
-//           },
-//           items: const <BottomNavigationBarItem>[
-//             BottomNavigationBarItem(icon: Icon(Icons.local_taxi_rounded), label: '叫車'),
-//             BottomNavigationBarItem(icon: Icon(Icons.account_circle_rounded), label: '我的'),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-//
-//   pageCaller(int index){
-//     switch(index){
-//       case 0:{return const Home();}
-//       case 1:{return const My();}
-//     }
-//   }
-// }
+class TabPage extends StatefulWidget {
+  const TabPage({Key? key}) : super(key: key);
+
+  @override
+  State<TabPage> createState() => _TabPageState();
+}
+
+class _TabPageState extends State<TabPage> {
+
+  int _selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(child: pageCaller(_selectedIndex),),
+
+      bottomNavigationBar: BottomNavigationBar(
+        elevation: _selectedIndex == 0 ? 0 : 8,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color(0xffFCFCFC),
+        selectedItemColor: AppColor.blue,
+        unselectedItemColor: const Color(0xff737273),
+        currentIndex: _selectedIndex,
+        onTap: (int index){
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.local_taxi_rounded), label: '叫車'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle_rounded), label: '我的'),
+        ],
+      ),
+    );
+  }
+
+  pageCaller(int index){
+    switch(index){
+      case 0:{return const Home();}
+      case 1:{return const My();}
+    }
+  }
+
+}

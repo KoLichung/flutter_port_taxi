@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../models/user.dart';
 
@@ -11,6 +12,8 @@ class UserModel extends ChangeNotifier {
   String? fcmToken;
   String? platformType;
   String? deviceId;
+
+  LatLng? currentPosition;
 
   void setUser(User theUser){
     _user = theUser;

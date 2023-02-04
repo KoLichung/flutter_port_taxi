@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_port_taxi/config/color.dart';
+import 'package:flutter_port_taxi/main.dart';
 import 'package:flutter_port_taxi/pages/register.dart';
 import '../config/server_api.dart';
 import '../models/user.dart';
@@ -76,7 +77,7 @@ class _LogInState extends State<LogIn> {
               onPressed: (){
                 _emailLogIn(context, emailController.text, passwordController.text);
 
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Home()), (Route<dynamic> route) => false, );
+                // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Home()), (Route<dynamic> route) => false, );
               },
             ),
 
@@ -87,7 +88,8 @@ class _LogInState extends State<LogIn> {
                 TextButton(
                   child: const Text('點這裡註冊', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),),
                   onPressed: (){
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Register()), (Route<dynamic> route) => false, );
+                    // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Register()), (Route<dynamic> route) => false, );
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Register()));
                   },
                 ),
 
@@ -99,6 +101,7 @@ class _LogInState extends State<LogIn> {
       ),
     );
   }
+
   Future<void> _emailLogIn(BuildContext context, String email, String password) async {
     var userModel = context.read<UserModel>();
     String path = ServerApi.userToken;
@@ -126,9 +129,7 @@ class _LogInState extends State<LogIn> {
         User? user = await _getUserData(token);
         userModel.setUser(user!);
 
-
-        Navigator.pop(context, 'ok');
-
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const TabPage()), (Route<dynamic> route) => false, );
       }else{
         print(response.body);
         ScaffoldMessenger.of(context).showSnackBar(

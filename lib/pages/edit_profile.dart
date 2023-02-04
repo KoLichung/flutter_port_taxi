@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../config/color.dart';
+import '../config/server_api.dart';
+import '../notifier_model/user_model.dart';
 import '../widget/custom_edit_profile_text_field.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -12,7 +16,6 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
 
-
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController oldPasswordController = TextEditingController();
@@ -22,8 +25,9 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    nameController.text='JuneWen';
-    emailController.text='abc@email.com';
+    var userModel = context.read<UserModel>();
+    nameController.text = userModel.user!.name!;
+    emailController.text = userModel.user!.email!;
   }
 
   @override
@@ -38,7 +42,11 @@ class _EditProfileState extends State<EditProfile> {
             padding: const EdgeInsets.only(right: 16),
             child: TextButton(
               child: const Text('儲存', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
-              onPressed: (){},
+              onPressed: (){
+                var userModel = context.read<UserModel>();
+                _putUpdateProfile(userModel.token!, nameController.text, emailController.text );
+                userModel.updateProfile(nameController.text,  emailController.text);
+              },
             ),
           )],
       ),
@@ -98,4 +106,35 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+  Future _putUpdateProfile (String token, String? name, String? email)async{
+    String path = ServerApi.userMe;
+    try{
+      final bodyParams ={
+        'name':name,
+        'email': email,
+      };
+
+      final response = await http.put(ServerApi.standard(path:path),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'token $token'
+        },
+        body: jsonEncode(bodyParams),
+      );
+      print(response.body);
+      if(response.statusCode == 200){
+        print('success update profile');
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("成功更新！"),
+            )
+        );
+      }
+
+    } catch (e){
+      print(e);
+    }
+
+  }
+
 }

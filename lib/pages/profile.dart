@@ -3,6 +3,8 @@ import 'package:flutter_port_taxi/config/color.dart';
 import 'package:flutter_port_taxi/pages/edit_profile.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'package:flutter_port_taxi/widget/custom_profile_text_unit.dart';
+import 'package:provider/provider.dart';
+import '../notifier_model/user_model.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -12,6 +14,17 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    var userModel = context.read<UserModel>();
+    
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +58,17 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               const SizedBox(height: 60,),
-              const CustomProfileTextUnit(
-                  icon: Icons.account_circle_outlined,
-                  title: 'JuneWen',
+              Consumer<UserModel>(builder: (context, userModel, child) =>
+                  CustomProfileTextUnit(
+                    icon: Icons.account_circle_outlined,
+                    title: userModel.user!.name!,
+                  ),
               ),
-              const CustomProfileTextUnit(
-                  icon: Icons.email_outlined,
-                  title: 'abc@email.com',
+              Consumer<UserModel>(builder: (context, userModel, child) =>
+                  CustomProfileTextUnit(
+                    icon: Icons.email_outlined,
+                    title: userModel.user!.email!,
+                  ),
               ),
               const CustomProfileTextUnit(
                   icon: Icons.lock_outline,

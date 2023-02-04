@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_port_taxi/pages/login.dart';
 import 'package:flutter_port_taxi/pages/register.dart';
+import 'package:provider/provider.dart';
 
 import 'config/color.dart';
+import 'notifier_model/user_model.dart';
 import 'pages/home.dart';
 import 'pages/my.dart';
 
 void main() {
-  runApp(const MyApp());
+
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context)=>UserModel(),),
+    ],
+    child: const MyApp(),));
 }
 
 class MyApp extends StatelessWidget {
@@ -29,7 +37,11 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner:false,
       // home: const MyHomePage(),
-      home: Register(),
+      // home: Register(),
+      home: LogIn(),
+      routes: {
+        '/log_in':(context) => const LogIn(),
+      },
     );
   }
 }

@@ -3,14 +3,14 @@ import 'package:flutter_port_taxi/widget/car_number_tag.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'dart:async';
 import '../config/color.dart';
-import '../config/service_api.dart';
+import '../config/server_api.dart';
+import '../notifier_model/user_model.dart';
 import 'my.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -82,6 +82,8 @@ class _HomeLayoutState extends State<HomeLayout> {
   double? currentLong;
 
   void _getUserLocation() async {
+    LocationPermission permission;
+    permission = await Geolocator.requestPermission();
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     setState(() {
       currentPosition = LatLng(position.latitude, position.longitude);
@@ -94,15 +96,23 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   //待修改
   void _callButtonCallback() {
-    setState(() {
-      isCallTaxiClicked = true;
-      isAllowGetLocation = false;
-      Timer(Duration(seconds:2), (){
-        print('yes');
-        _statusCallerIndex = 1;
+    var userModel = context.read<UserModel>();
+    if(pickUpAddressController.text.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("請輸入您的上車地址！"),));
+
+    } else {
+      setState(() {
+        isCallTaxiClicked = true;
+        isAllowGetLocation = false;
+        // Timer(Duration(seconds:2), (){
+        //   print('yes');
+        //   _statusCallerIndex = 1;
+        // });
+        _postCreateCase();
       });
 
-    });
+    }
+
   }
 
   @override
@@ -172,15 +182,17 @@ class _HomeLayoutState extends State<HomeLayout> {
                 height: 35,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(0),
                         elevation: 0,
                         backgroundColor: AppColor.lightBlue,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15)
                         )
                     ),
-                    onPressed: isAllowGetLocation == true ? (){getHttpConvertToAddress(currentLat!, currentLong!);} : null,
+                    onPressed: isAllowGetLocation == true
+                        ? (){ getHttpConvertToAddress(currentLat!, currentLong!); }
+                        : null,
                     child: const Text('取得當前位置')
-
                 ),
               ),
             )
@@ -356,8 +368,8 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   Future getHttpConvertToAddress(double lat, double long) async{
     //如果是英文使用者語言要把 &language=zh-TW 刪掉
-    String path = '${ServiceApi.currentAddress}$lat,$long&key=$geocodingKey&language=zh-TW';
     // String path = '${ServiceApi.currentAddress}25.03369,121.564128&key=$geocodingKey&language=zh-TW';
+    String path = '${ServerApi.currentAddress}$lat,$long&key=$geocodingKey&language=zh-TW';
 
     try {
       final response = await http.get(Uri.parse(path));
@@ -373,6 +385,44 @@ class _HomeLayoutState extends State<HomeLayout> {
       print(e);
     }
   }
+
+  Future _postCreateCase() async {
+    var userModel = context.read<UserModel>();
+    String path = ServerApi.postNewCase;
+    try {
+
+      final bodyParameters = {
+        'on_address' : pickUpAddressController.text,
+        'off_address': dropOffAddressController.text.isEmpty ? '無' :dropOffAddressController.text
+      };
+
+      print(bodyParameters);
+
+      final response = await http.post(ServerApi.standard(path: path),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Token ${userModel.token!}'
+          },
+          body: jsonEncode(bodyParameters)
+      );
+      // print(response.body);
+
+      if(response.statusCode == 201){
+
+        print('成功叫車');
+
+      }else{
+        print(response.statusCode);
+        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(const SnackBar(content: Text('叫車失敗!')));
+      }
+
+
+    } catch (e) {
+      print(e);
+      return "error";
+    }
+  }
+
 }
 
 

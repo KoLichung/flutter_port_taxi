@@ -12,6 +12,8 @@ class ServerApi{
   static const currentAddress = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
   static const postNewCase = '/api/post_new_case';
 
+  static const userCases = '/api/user_cases/';
+
 
   static Uri standard({String? path, Map<String, String>? queryParameters}) {
     print(Uri.http(_host, '$path', queryParameters));

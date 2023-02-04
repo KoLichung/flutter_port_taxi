@@ -48,15 +48,16 @@ class _ProfileState extends State<Profile> {
         child: Center(
           child: Column(
             children: [
-              Container(
-                margin: const EdgeInsets.only(top: 40),
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  shape: BoxShape.circle,
-                ),
-              ),
+              const Icon(Icons.account_circle, size: 110, color: AppColor.blue,),
+              // Container(
+              //   margin: const EdgeInsets.only(top: 40),
+              //   width: 96,
+              //   height: 96,
+              //   decoration: BoxDecoration(
+              //     color: Colors.grey.shade300,
+              //     shape: BoxShape.circle,
+              //   ),
+              // ),
               const SizedBox(height: 60,),
               Consumer<UserModel>(builder: (context, userModel, child) =>
                   CustomProfileTextUnit(
@@ -69,10 +70,6 @@ class _ProfileState extends State<Profile> {
                     icon: Icons.email_outlined,
                     title: userModel.user!.email!,
                   ),
-              ),
-              const CustomProfileTextUnit(
-                  icon: Icons.lock_outline,
-                  title: '********',
               ),
               const Spacer(flex: 1,),
               CustomOutlinedButton(color: AppColor.red, title: '刪除帳號', onPressed: (){}),

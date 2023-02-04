@@ -61,15 +61,15 @@ class _LogInState extends State<LogIn> {
               controller: passwordController,
               isObscureText: true,
             ),
-            Container(
-              alignment: Alignment.centerRight,
-              width: 320,
-              child: TextButton(
-                child: const Text('忘記密碼'),
-                onPressed: () {  },
-
-              ),
-            ),
+            // Container(
+            //   alignment: Alignment.centerRight,
+            //   width: 320,
+            //   child: TextButton(
+            //     child: const Text('忘記密碼'),
+            //     onPressed: () {  },
+            //
+            //   ),
+            // ),
             const Spacer(flex: 2,),
             CustomFixedWidthElevatedButton(
               color: AppColor.blue,

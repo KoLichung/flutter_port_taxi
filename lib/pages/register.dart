@@ -6,7 +6,6 @@ import '../models/user.dart';
 import '../notifier_model/user_model.dart';
 import '../widget/custom_fixed_width_elevated_button.dart';
 import '../widget/custom_log_in_text_field.dart';
-import 'home.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -94,6 +93,13 @@ class _RegisterState extends State<Register> {
                         onTap: (){},
                         child: const Text( '隱私權政策', style: TextStyle(fontWeight: FontWeight.bold,color: AppColor.blue, decoration: TextDecoration.underline, fontSize: 14), )),
                   ],
+                ),
+                const SizedBox(height: 10,),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/log_in');
+                    },
+                    child: const Text('返回上一頁')
                 ),
                 const Spacer(flex: 1,)
               ],

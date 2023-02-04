@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_port_taxi/pages/edit_password.dart';
 import 'package:flutter_port_taxi/pages/login.dart';
 import 'package:flutter_port_taxi/pages/register.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/main':(context) => const TabPage(),
         '/log_in':(context) => const LogIn(),
+        '/edit_password':(context) => const EditPassword(),
       },
     );
   }

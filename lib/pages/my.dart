@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_port_taxi/widget/custom_my_page_button.dart';
 import 'package:flutter_port_taxi/pages/profile.dart';
-import 'package:flutter_port_taxi/pages/ride_record.dart';
+import 'package:flutter_port_taxi/pages/ride_record_list.dart';
 import 'package:provider/provider.dart';
 
 import '../notifier_model/user_model.dart';
@@ -83,7 +83,7 @@ class _MyState extends State<My> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context)=> const RideRecord()));
+                      builder: (context)=> const RideRecordList()));
               },
           ),
         ],

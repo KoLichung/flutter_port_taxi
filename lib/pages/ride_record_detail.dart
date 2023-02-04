@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_port_taxi/config/time_converter.dart';
+import 'package:flutter_port_taxi/models/ride_case.dart';
 import 'package:flutter_port_taxi/widget/car_number_tag.dart';
-
 import '../config/color.dart';
 
-class RideRecordDetail extends StatelessWidget {
+class RideRecordDetail extends StatefulWidget {
 
-  RideRecordDetail({Key? key}) : super(key: key);
+  final RideCase theCase;
+  const RideRecordDetail({Key? key, required this.theCase}) : super(key: key);
 
-  String taxiPrice = '290';
+  @override
+  State<RideRecordDetail> createState() => _RideRecordDetailState();
+}
+
+class _RideRecordDetailState extends State<RideRecordDetail> {
 
   @override
   Widget build(BuildContext context) {
@@ -22,21 +28,21 @@ class RideRecordDetail extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20,),
-            Text('2022/12/13 下午 6:43'),
+            Text('${DateTimeConverter.dateTime(widget.theCase.createTime!)}'),
             const SizedBox(height: 30,),
-            Text('司機：王小明',),
+            Text('司機：${widget.theCase.driverName}',),
             Row(
               children: [
-                Text('乘車：Toyota Wish'),
-                CarNumberTag(carNumber: 'abc-567')
+                Text('乘車：${widget.theCase.carModel}'),
+                CarNumberTag(carNumber: widget.theCase.carIdNumber!)
               ],
             ),
             const SizedBox(height: 30,),
             const Text('上車位置',style: TextStyle(fontSize: 14)),
-            Text('桃園市桃園區民生路23號', style: TextStyle(fontWeight: FontWeight.bold),),
+            Text(widget.theCase.onAddress!, style: const TextStyle(fontWeight: FontWeight.bold),),
             const SizedBox(height: 10,),
             const Text('下車位置',style: TextStyle(fontSize: 14)),
-            Text('桃園市桃園區民生路100號', style: TextStyle(fontWeight: FontWeight.bold),),
+            Text(widget.theCase.offAddress!, style: const TextStyle(fontWeight: FontWeight.bold),),
             const Divider(color: Colors.black,height: 30,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,12 +52,10 @@ class RideRecordDetail extends StatelessWidget {
                     TextSpan(
                         children: [
                           const TextSpan(text:'\$ ',style: TextStyle(fontSize: 14)),
-                          TextSpan(text: taxiPrice, style: TextStyle(color: AppColor.red, fontWeight: FontWeight.bold, fontSize: 26))
+                          TextSpan(text: widget.theCase.caseMoney!.toString(), style: const TextStyle(color: AppColor.red, fontWeight: FontWeight.bold, fontSize: 26))
                         ]))
               ],
             ),
-
-
           ],
         ),
       ),

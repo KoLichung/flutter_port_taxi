@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'package:provider/provider.dart';
 import '../config/color.dart';
 import '../config/server_api.dart';
@@ -50,21 +51,12 @@ class _EditProfileState extends State<EditProfile> {
             ),
           )],
       ),
-      body: Scaffold(
-        body: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
+        body: SafeArea(
           child: Center(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 40),
-                  width: 96,
-                  height: 96,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    shape: BoxShape.circle,
-                  ),
-                ),
+                const Icon(Icons.account_circle, size: 110, color: AppColor.blue,),
                 const SizedBox(height: 60,),
                 const SizedBox(
                   width: 320,
@@ -79,31 +71,18 @@ class _EditProfileState extends State<EditProfile> {
                   child: Text('Email',style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
                 ),
                 CustomEditProfileTextField(controller: emailController,),
-                const SizedBox(height: 20,),
-                const SizedBox(
-                  width: 320,
-                  height: 40,
-                  child: Text('舊密碼',style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
-                ),
-                CustomEditProfileTextField(
-                  isObscureText: true,
-                  controller: oldPasswordController,
-                ),
-                const SizedBox(height: 20,),
-                const SizedBox(
-                  width: 320,
-                  height: 40,
-                  child: Text('新密碼',style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
-                ),
-                CustomEditProfileTextField(
-                  isObscureText: true,
-                  controller: newPasswordController,
-                ),
-               ],
+                // const SizedBox(height: 20,),
+                const Spacer(),
+                CustomOutlinedButton(
+                    color: AppColor.blue,
+                    title: '修改密碼',
+                    onPressed: (){
+                      Navigator.pushNamed(context, '/edit_password');
+                    }),
+              ],
             ),
           ),
         ),
-      ),
     );
   }
   Future _putUpdateProfile (String token, String? name, String? email)async{
@@ -113,7 +92,6 @@ class _EditProfileState extends State<EditProfile> {
         'name':name,
         'email': email,
       };
-
       final response = await http.put(ServerApi.standard(path:path),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -124,17 +102,12 @@ class _EditProfileState extends State<EditProfile> {
       print(response.body);
       if(response.statusCode == 200){
         print('success update profile');
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("成功更新！"),
-            )
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("成功更新！"),)
         );
       }
-
     } catch (e){
       print(e);
     }
-
   }
 
 }

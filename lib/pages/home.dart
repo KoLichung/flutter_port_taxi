@@ -66,9 +66,7 @@ class _HomeState extends State<Home> {
         // });
         _postCreateCase();
       });
-
     }
-
   }
 
   @override
@@ -81,19 +79,16 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Container(
-          child:Consumer<UserModel>(builder: (context, userModel, child) =>
-            (userModel.currentPosition==null)?
-            const CircularProgressIndicator(color: AppColor.blue,)
-                :
-            GoogleMap(
-              myLocationEnabled: true,
-              initialCameraPosition: CameraPosition(
-                target: userModel.currentPosition!,
-                zoom: 16,
-              ),
-            ),
-          )
+        child: Consumer<UserModel>(builder: (context, userModel, child) =>
+          (userModel.currentPosition==null)
+              ? const CircularProgressIndicator(color: AppColor.blue,)
+              : GoogleMap(
+                  myLocationEnabled: true,
+                  initialCameraPosition: CameraPosition(
+                    target: userModel.currentPosition!,
+                    zoom: 16,
+                  ),
+                ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -349,12 +344,10 @@ class _HomeState extends State<Home> {
     var userModel = context.read<UserModel>();
     String path = ServerApi.postNewCase;
     try {
-
       final bodyParameters = {
         'on_address' : pickUpAddressController.text,
-        'off_address': dropOffAddressController.text.isEmpty ? '無' :dropOffAddressController.text
+        'off_address': dropOffAddressController.text.isEmpty ? '無' : dropOffAddressController.text
       };
-
       print(bodyParameters);
 
       final response = await http.post(ServerApi.standard(path: path),
@@ -366,16 +359,17 @@ class _HomeState extends State<Home> {
       );
       // print(response.body);
 
-      if(response.statusCode == 201){
-
+      if(response.statusCode == 200){
         print('成功叫車');
 
       }else{
         print(response.statusCode);
-        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(const SnackBar(content: Text('叫車失敗!')));
+        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(const SnackBar(content: Text('地址有誤，請重新輸入!')));
+        setState(() {
+          isCallTaxiClicked = false;
+          isAllowGetLocation = true;
+        });
       }
-
-
     } catch (e) {
       print(e);
       return "error";

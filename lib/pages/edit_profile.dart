@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_port_taxi/models/user.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'package:provider/provider.dart';
 import '../config/color.dart';
@@ -46,7 +47,6 @@ class _EditProfileState extends State<EditProfile> {
               onPressed: (){
                 var userModel = context.read<UserModel>();
                 _putUpdateProfile(userModel.token!, nameController.text, emailController.text );
-                userModel.updateProfile(nameController.text,  emailController.text);
               },
             ),
           )],
@@ -87,6 +87,7 @@ class _EditProfileState extends State<EditProfile> {
   }
   Future _putUpdateProfile (String token, String? name, String? email)async{
     String path = ServerApi.userMe;
+    var userModel = context.read<UserModel>();
     try{
       final bodyParams ={
         'name':name,
@@ -102,8 +103,9 @@ class _EditProfileState extends State<EditProfile> {
       print(response.body);
       if(response.statusCode == 200){
         print('success update profile');
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("成功更新！"),)
-        );
+        userModel.updateProfile(nameController.text,  emailController.text);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("成功更新！")));
+        Navigator.pop(context);
       }
     } catch (e){
       print(e);

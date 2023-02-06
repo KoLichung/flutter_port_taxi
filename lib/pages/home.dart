@@ -4,6 +4,7 @@ import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'dart:async';
 import '../config/color.dart';
 import '../config/server_api.dart';
+import '../models/ride_case.dart';
 import '../notifier_model/user_model.dart';
 import 'my.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -21,8 +22,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  int _statusCallerIndex = 0;
-
   bool isEngDriverNeeded = false;
   bool isCallTaxiClicked = false;
   bool isAllowGetLocation = true;
@@ -35,6 +34,9 @@ class _HomeState extends State<Home> {
   // LatLng? currentPosition;
   double? currentLat;
   double? currentLong;
+
+  Timer? _taskTimer;
+  int? currentCaseId;
 
   void _getUserLocation() async {
     LocationPermission permission;
@@ -60,10 +62,6 @@ class _HomeState extends State<Home> {
       setState(() {
         isCallTaxiClicked = true;
         isAllowGetLocation = false;
-        // Timer(Duration(seconds:2), (){
-        //   print('yes');
-        //   _statusCallerIndex = 1;
-        // });
         _postCreateCase();
       });
     }
@@ -96,7 +94,9 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         height: 222,
         // child: getStatusLayout(_statusCallerIndex),
-        child: statusCaller(0)
+        child: Consumer<UserModel>(builder: (context, userModel, child){
+          return statusCaller(userModel.statusCallerIndex);
+        }),
       ),
     );
   }
@@ -170,7 +170,7 @@ class _HomeState extends State<Home> {
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.only(bottom: 14),
                     hintStyle: TextStyle(fontSize: 14),
-                    hintText: '輸入下車位置可預估車資(可省略)',
+                    hintText: '輸入下車位置',
                       border: InputBorder.none
                   ),
                 )
@@ -287,7 +287,14 @@ class _HomeState extends State<Home> {
               title: '確認',
               onPressed: (){
                 setState(() {
-                  _statusCallerIndex = 0;
+                  var userModel = context.read<UserModel>();
+                  userModel.statusCallerIndex = 0;
+                  isCallTaxiClicked = false;
+                  isAllowGetLocation = true;
+                  pickUpAddressController.text = '';
+                  dropOffAddressController.text = '';
+                  currentCaseId = null;
+                  _taskTimer!.cancel();
                 });
               })
         ],
@@ -310,15 +317,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-  //待修改
-  getStatusLayout(int index){
-    if (index == 0){
-      return statusCaller(0);
-    } else if (index ==1 ){
-      return statusCaller(1);
-    }
-
-  }
 
   Future getHttpConvertToAddress(double lat, double long) async{
     //如果是英文使用者語言要把 &language=zh-TW 刪掉
@@ -361,6 +359,18 @@ class _HomeState extends State<Home> {
 
       if(response.statusCode == 200){
         print('成功叫車');
+        Map<String, dynamic> map = json.decode(response.body);
+        currentCaseId = map['case_id'];
+
+        _taskTimer = Timer.periodic(const Duration(seconds:5), (timer){
+          if(currentCaseId!=null) {
+            getCurrentCaseState(currentCaseId!);
+          }else{
+            if(_taskTimer!=null) {
+              _taskTimer!.cancel();
+            }
+          }
+        });
 
       }else{
         print(response.statusCode);
@@ -373,6 +383,43 @@ class _HomeState extends State<Home> {
     } catch (e) {
       print(e);
       return "error";
+    }
+  }
+
+  Future getCurrentCaseState(int caseId) async{
+    String path = ServerApi.getCurrentCaseState;
+    var userModel = context.read<UserModel>();
+    try {
+      final queryParams = {
+        'case_id': caseId.toString(),
+      };
+
+      final response = await http.get(
+          ServerApi.standard(path: path,queryParameters: queryParams),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Token ${userModel.token}',
+          },
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        RideCase theCase = RideCase.fromJson(data);
+
+        print(theCase.caseState);
+        switch(theCase.caseState) {
+          case 'wait': {userModel.statusCallerIndex=1;} break;
+          case 'way_to_catch': {userModel.statusCallerIndex=1;} break;
+          case 'arrived': {userModel.statusCallerIndex=2;}break;
+          case 'catched': {userModel.statusCallerIndex=2;}break;
+          case 'on_road': {userModel.statusCallerIndex=2;}break;
+          case 'finished': {userModel.statusCallerIndex=3;}break;
+          default: {userModel.statusCallerIndex=0;}
+          break;
+        }
+        setState(() {});
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

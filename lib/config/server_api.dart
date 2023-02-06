@@ -11,6 +11,7 @@ class ServerApi{
   // static const currentAddress = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=27.6669987,85.3071003&key=API_KEY';
   static const currentAddress = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
   static const postNewCase = '/api/post_new_case';
+  static const getCurrentCaseState = '/api/get_current_case_state';
 
   static const userCases = '/api/user_cases/';
 

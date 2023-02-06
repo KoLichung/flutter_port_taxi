@@ -14,6 +14,7 @@ class UserModel extends ChangeNotifier {
   String? deviceId;
 
   LatLng? currentPosition;
+  int statusCallerIndex = 0;
 
   void setUser(User theUser){
     _user = theUser;

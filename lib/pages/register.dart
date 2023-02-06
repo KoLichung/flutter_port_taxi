@@ -60,6 +60,7 @@ class _RegisterState extends State<Register> {
                 ),
                 const SizedBox(height: 15,),
                 CustomLogInTextField(
+                  isObscureText: true,
                   icon: Icons.lock_outline,
                   hintText: '密碼',
                   controller: passwordController,

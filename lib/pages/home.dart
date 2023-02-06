@@ -25,6 +25,7 @@ class _HomeState extends State<Home> {
   bool isEngDriverNeeded = false;
   bool isCallTaxiClicked = false;
   bool isAllowGetLocation = true;
+  bool isTextFieldEnable = true;
   TextEditingController pickUpAddressController = TextEditingController();
   TextEditingController dropOffAddressController = TextEditingController();
 
@@ -52,7 +53,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-  //待修改
   void _callButtonCallback() {
     var userModel = context.read<UserModel>();
     if(pickUpAddressController.text.isEmpty){
@@ -62,6 +62,7 @@ class _HomeState extends State<Home> {
       setState(() {
         isCallTaxiClicked = true;
         isAllowGetLocation = false;
+        isTextFieldEnable = false;
         _postCreateCase();
       });
     }
@@ -119,6 +120,7 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(6)
                   ),
                   child: TextField(
+                    enabled: isTextFieldEnable,
                     style: const TextStyle(fontSize: 14),
                     controller: pickUpAddressController,
                     decoration: const InputDecoration(
@@ -136,7 +138,7 @@ class _HomeState extends State<Home> {
                 height: 35,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.all(0),
+                        padding: const EdgeInsets.all(0),
                         elevation: 0,
                         backgroundColor: AppColor.lightBlue,
                         shape: RoundedRectangleBorder(
@@ -166,6 +168,7 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(6)
                 ),
                 child: TextField(
+                  enabled: isTextFieldEnable,
                   controller: dropOffAddressController,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.only(bottom: 14),
@@ -243,7 +246,7 @@ class _HomeState extends State<Home> {
                   ]
               )),
           const SizedBox(height: 10,),
-          Text('上車位置：桃園區民族路1號'),
+          Text('上車位置：${pickUpAddressController.text}'),
           // const Spacer(flex: 1,),
         ],
       ),

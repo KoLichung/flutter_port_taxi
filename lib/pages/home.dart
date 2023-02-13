@@ -12,6 +12,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -59,12 +60,11 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _getUserLocation();
-
-
   }
 
   @override
   Widget build(BuildContext context) {
+    print(AppLocalizations.of(context)!.helloWorld);
 
     return Scaffold(
       body: Center(

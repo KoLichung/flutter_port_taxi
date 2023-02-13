@@ -42,7 +42,7 @@ class _RideRecordDetailState extends State<RideRecordDetail> {
             Text(widget.theCase.onAddress!, style: const TextStyle(fontWeight: FontWeight.bold),),
             const SizedBox(height: 10,),
             const Text('下車位置',style: TextStyle(fontSize: 14)),
-            Text(widget.theCase.offAddress!, style: const TextStyle(fontWeight: FontWeight.bold),),
+            widget.theCase.offAddress == null ? const Text('未指名') : Text(widget.theCase.offAddress!, style: const TextStyle(fontWeight: FontWeight.bold),),
             const Divider(color: Colors.black,height: 30,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,7 +52,9 @@ class _RideRecordDetailState extends State<RideRecordDetail> {
                     TextSpan(
                         children: [
                           const TextSpan(text:'\$ ',style: TextStyle(fontSize: 14)),
-                          TextSpan(text: widget.theCase.caseMoney!.toString(), style: const TextStyle(color: AppColor.red, fontWeight: FontWeight.bold, fontSize: 26))
+                          widget.theCase.caseMoney == null
+                              ? const TextSpan(text: '尚無資料')
+                              : TextSpan(text: widget.theCase.caseMoney!.toString(), style: const TextStyle(color: AppColor.red, fontWeight: FontWeight.bold, fontSize: 26))
                         ]))
               ],
             ),

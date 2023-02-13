@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_port_taxi/generated/l10n.dart';
 import 'package:flutter_port_taxi/pages/edit_password.dart';
 import 'package:flutter_port_taxi/pages/login.dart';
 import 'package:flutter_port_taxi/pages/register.dart';
@@ -37,9 +39,24 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner:false,
-      // home: const MyHomePage(),
-      // home: Register(),
-      home: LogIn(),
+      home: const LogIn(),
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      // supportedLocales: S.delegate.supportedLocales,
+      supportedLocales: [const Locale('en', ''), ...S.delegate.supportedLocales],
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        print('deviceLocale: ${deviceLocale?.languageCode}');
+        if (deviceLocale?.languageCode == 'zh') {
+          return const Locale('zh', 'TW'); //繁体
+        } else {
+          return const Locale('en', ); //en
+        }
+        return null;
+      },
       routes: {
         '/main':(context) => const TabPage(),
         '/log_in':(context) => const LogIn(),

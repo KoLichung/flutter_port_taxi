@@ -43,34 +43,34 @@ class _RideRecordListState extends State<RideRecordList> {
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               itemCount: myRideCasesList.length,
-              itemBuilder: (BuildContext context,int i){
+              itemBuilder:  (BuildContext context,int i){
                 return Column(
                   children: [
-                  GestureDetector(
-                    child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        child: ListTile(
-                          title: Text(DateTimeConverter.date(myRideCasesList[i].createTime!), style: const TextStyle(fontSize: 16),),
-                          subtitle: Text(myRideCasesList[i].onAddress!, style: const TextStyle(fontSize: 16),),
-                          trailing: const SizedBox(
-                            width: 30,
-                            child: Icon(Icons.arrow_forward_ios, color: Color(0xff292D32),),
-                          ),
-                        )),
-                    onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>RideRecordDetail(theCase: myRideCasesList[i]),
-                          ));
-                    },
-                  ),
-                  const Divider(
-                    color: Color(0xffCCCCCC),
-                    thickness: 0.5,
-                  ),
-                ],);
-              },
+                    GestureDetector(
+                      child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          child: ListTile(
+                            title: Text(DateTimeConverter.date(myRideCasesList[i].createTime!), style: const TextStyle(fontSize: 16),),
+                            subtitle: Text(myRideCasesList[i].onAddress!, style: const TextStyle(fontSize: 16),),
+                            trailing: const SizedBox(
+                              width: 30,
+                              child: Icon(Icons.arrow_forward_ios, color: Color(0xff292D32),),
+                            ),
+                          )),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RideRecordDetail(theCase: myRideCasesList[i]),
+                            ));
+                      },
+                    ),
+                    const Divider(
+                      color: Color(0xffCCCCCC),
+                      thickness: 0.5,
+                    ),
+                  ],);
+                },
               )
             ),
       );
@@ -89,7 +89,7 @@ class _RideRecordListState extends State<RideRecordList> {
         // print(response.body);
         List<dynamic> parsedListJson = json.decode(utf8.decode(response.body.runes.toList()));
         List<RideCase> data = List<RideCase>.from(parsedListJson.map((i) => RideCase.fromJson(i)));
-        myRideCasesList = data;
+        myRideCasesList = data.where((element) => element.caseState=='finished' || element.caseState=='canceled').toList();
         setState(() {
           isLoading = false;
         });

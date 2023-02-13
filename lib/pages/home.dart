@@ -22,12 +22,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  bool isEngDriverNeeded = false;
-  bool isCallTaxiClicked = false;
-  bool isAllowGetLocation = true;
-  bool isTextFieldEnable = true;
-  TextEditingController pickUpAddressController = TextEditingController();
-  TextEditingController dropOffAddressController = TextEditingController();
+  // bool isEngDriverNeeded = false;
+  // bool isCallTaxiClicked = false;
+  // bool isAllowGetLocation = true;
+  // bool isTextFieldEnable = true;
+  // TextEditingController pickUpAddressController = TextEditingController();
+  // TextEditingController dropOffAddressController = TextEditingController();
 
 
   String geocodingKey = 'AIzaSyCdP86OffSMXL82nbHA0l6K0W2xrdZ5xLk';
@@ -37,7 +37,9 @@ class _HomeState extends State<Home> {
   double? currentLong;
 
   Timer? _taskTimer;
-  int? currentCaseId;
+
+  // int? currentCaseId;
+  // RideCase? rideCase;
 
   void _getUserLocation() async {
     LocationPermission permission;
@@ -53,29 +55,17 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _callButtonCallback() {
-    var userModel = context.read<UserModel>();
-    if(pickUpAddressController.text.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("請輸入您的上車地址！"),));
-
-    } else {
-      setState(() {
-        isCallTaxiClicked = true;
-        isAllowGetLocation = false;
-        isTextFieldEnable = false;
-        _postCreateCase();
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     _getUserLocation();
+
+
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Center(
         child: Consumer<UserModel>(builder: (context, userModel, child) =>
@@ -94,7 +84,6 @@ class _HomeState extends State<Home> {
         color: const Color.fromARGB(255,253,252,252),
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         height: 222,
-        // child: getStatusLayout(_statusCallerIndex),
         child: Consumer<UserModel>(builder: (context, userModel, child){
           return statusCaller(userModel.statusCallerIndex);
         }),
@@ -103,6 +92,8 @@ class _HomeState extends State<Home> {
   }
 
   callTaxiLayout(){
+    var userModel = context.read<UserModel>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,9 +111,9 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(6)
                   ),
                   child: TextField(
-                    enabled: isTextFieldEnable,
+                    enabled: userModel.isTextFieldEnable,
                     style: const TextStyle(fontSize: 14),
-                    controller: pickUpAddressController,
+                    controller: userModel.pickUpAddressController,
                     decoration: const InputDecoration(
                         contentPadding: EdgeInsets.only(bottom: 14),
                         hintStyle: TextStyle(fontSize: 14),
@@ -145,7 +136,7 @@ class _HomeState extends State<Home> {
                             borderRadius: BorderRadius.circular(15)
                         )
                     ),
-                    onPressed: isAllowGetLocation == true
+                    onPressed: userModel.isAllowGetLocation == true
                         ? (){ getHttpConvertToAddress(currentLat!, currentLong!); }
                         : null,
                     child: const Text('取得當前位置')
@@ -168,8 +159,8 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(6)
                 ),
                 child: TextField(
-                  enabled: isTextFieldEnable,
-                  controller: dropOffAddressController,
+                  enabled: userModel.isTextFieldEnable,
+                  controller: userModel.dropOffAddressController,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.only(bottom: 14),
                     hintStyle: TextStyle(fontSize: 14),
@@ -188,11 +179,15 @@ class _HomeState extends State<Home> {
               width: 24,
               child: Checkbox(
                 visualDensity: VisualDensity.comfortable,
-                value: isEngDriverNeeded,
-                onChanged: (bool? value) {
-                  setState(() {
-                    isEngDriverNeeded = value!;
-                  });
+                value: userModel.isEngDriverNeeded,
+                onChanged: userModel.isCallTaxiClicked
+                    ? null
+                    :  (bool? value) {
+                        setState(() {
+                          userModel.isEngDriverNeeded = value!;
+                          print('isEngDriverNeeded: ${userModel.isEngDriverNeeded}');
+
+                        });
                 },),
             ),
             const SizedBox(width: 10,),
@@ -211,8 +206,22 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(15)
                 )
             ),
-            onPressed: isCallTaxiClicked == false ? _callButtonCallback : null,
-            child: Text( isCallTaxiClicked == false ? '叫車' : '搜尋司機中...', style: const TextStyle(fontSize: 18),),
+            // onPressed: isCallTaxiClicked == false ? _callButtonCallback : null,
+            onPressed: userModel.isCallTaxiClicked
+                ? null //this null is to disable button
+                :(){
+                      if(userModel.pickUpAddressController.text.isEmpty){
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("請輸入您的上車地址！"),));
+                      } else {
+                        setState(() {
+                          userModel.isCallTaxiClicked = true;
+                          userModel.isAllowGetLocation = false;
+                          userModel.isTextFieldEnable = false;
+                          _postCreateCase();
+                        });
+                      }
+                  },
+            child: Text( userModel.isCallTaxiClicked == false ? '叫車' : '搜尋司機中...', style: const TextStyle(fontSize: 18),),
           ),
         )
       ],
@@ -220,6 +229,8 @@ class _HomeState extends State<Home> {
   }
 
   waitingTaxiLayout(){
+    var userModel = context.read<UserModel>();
+
     return Container(
       alignment: Alignment.center,
       child: Column(
@@ -227,26 +238,26 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // const Spacer(flex: 1,),
-          Text('司機：王小明', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          Text('司機：${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           const SizedBox(height: 10,),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-            Text('Toyota Wish', style: TextStyle(fontWeight: FontWeight.bold),),
-            CarNumberTag(carNumber: '134-456')
+            Text(userModel.rideCase!.carModel!, style: const TextStyle(fontWeight: FontWeight.bold),),
+            CarNumberTag(carNumber:userModel.rideCase!.carIdNumber! )
           ],),
           const SizedBox(height: 10,),
           Text.rich(
               TextSpan(
                   children: [
-                    TextSpan(text: '小明司機在路上，約', style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
-                    TextSpan(text: ' 5 ', style: TextStyle(color: AppColor.red, fontWeight: FontWeight.bold)),
-                    TextSpan(text: '分鐘到達～', style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
+                    TextSpan(text: '${userModel.rideCase!.driverName!}司機在路上，約 ', style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
+                    TextSpan(text: userModel.rideCase?.expectMinutes.toString(), style: const TextStyle(color: AppColor.red, fontWeight: FontWeight.bold)),
+                    const TextSpan(text: ' 分鐘到達～', style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
 
                   ]
               )),
           const SizedBox(height: 10,),
-          Text('上車位置：${pickUpAddressController.text}'),
+          Flexible(child: Text('上車位置：${userModel.pickUpAddressController.text}')),
           // const Spacer(flex: 1,),
         ],
       ),
@@ -254,6 +265,8 @@ class _HomeState extends State<Home> {
   }
 
   inTaxiLayout(){
+    var userModel = context.read<UserModel>();
+
     return Container(
       alignment: Alignment.center,
       child: Column(
@@ -261,18 +274,20 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // const Spacer(flex: 1,),
-          Text('司機：王小明', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          Text('司機：${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           const SizedBox(height: 10,),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Toyota Wish', style: TextStyle(fontWeight: FontWeight.bold),),
-              CarNumberTag(carNumber: '134-456')
+              Text(userModel.rideCase!.carModel!, style: const TextStyle(fontWeight: FontWeight.bold),),
+              CarNumberTag(carNumber: userModel.rideCase!.carIdNumber!)
             ],),
           const SizedBox(height: 10,),
-          Text('上車：桃園區民族路1號'),
+          Text('上車：${userModel.pickUpAddressController.text}'),
           const SizedBox(height: 10,),
-          Text('下車：蘆竹區中山路100號'),
+          userModel.dropOffAddressController.text.isNotEmpty
+              ? Text('下車：${userModel.dropOffAddressController.text}')
+              : const Text('下車：未指名')
           // const Spacer(flex: 1,),
         ],
       ),
@@ -280,6 +295,8 @@ class _HomeState extends State<Home> {
   }
 
   arrivedDestinationLayout(){
+    var userModel = context.read<UserModel>();
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -292,11 +309,11 @@ class _HomeState extends State<Home> {
                 setState(() {
                   var userModel = context.read<UserModel>();
                   userModel.statusCallerIndex = 0;
-                  isCallTaxiClicked = false;
-                  isAllowGetLocation = true;
-                  pickUpAddressController.text = '';
-                  dropOffAddressController.text = '';
-                  currentCaseId = null;
+                  userModel.isCallTaxiClicked = false;
+                  userModel.isAllowGetLocation = true;
+                  userModel.pickUpAddressController.text = '';
+                  userModel.dropOffAddressController.text = '';
+                  userModel.currentCaseId = null;
                   _taskTimer!.cancel();
                 });
               })
@@ -322,6 +339,8 @@ class _HomeState extends State<Home> {
 
 
   Future getHttpConvertToAddress(double lat, double long) async{
+    var userModel = context.read<UserModel>();
+
     //如果是英文使用者語言要把 &language=zh-TW 刪掉
     // String path = '${ServiceApi.currentAddress}25.03369,121.564128&key=$geocodingKey&language=zh-TW';
     String path = '${ServerApi.currentAddress}$lat,$long&key=$geocodingKey&language=zh-TW';
@@ -333,7 +352,7 @@ class _HomeState extends State<Home> {
         print(data['status']);
         print(data['results'][0]['formatted_address']);
         setState(() {
-          pickUpAddressController.text=data['results'][0]['formatted_address'];
+          userModel.pickUpAddressController.text=data['results'][0]['formatted_address'];
         });
       }
     } catch (e) {
@@ -346,8 +365,9 @@ class _HomeState extends State<Home> {
     String path = ServerApi.postNewCase;
     try {
       final bodyParameters = {
-        'on_address' : pickUpAddressController.text,
-        'off_address': dropOffAddressController.text.isEmpty ? '無' : dropOffAddressController.text
+        'on_address' : userModel.pickUpAddressController.text,
+        'off_address': userModel.dropOffAddressController.text.isEmpty ? '未指名' : userModel.dropOffAddressController.text,
+        'is_english': userModel.isEngDriverNeeded,
       };
       print(bodyParameters);
 
@@ -358,16 +378,20 @@ class _HomeState extends State<Home> {
           },
           body: jsonEncode(bodyParameters)
       );
-      // print(response.body);
+
+      print(response.body);
 
       if(response.statusCode == 200){
         print('成功叫車');
         Map<String, dynamic> map = json.decode(response.body);
-        currentCaseId = map['case_id'];
+        userModel.currentCaseId = map['case_id'];
+
+        //每五秒要抓一次資料 getCurrentCaseState
+        // 要讓他不論切到哪個畫面都能夠在背景底下持續計時
 
         _taskTimer = Timer.periodic(const Duration(seconds:5), (timer){
-          if(currentCaseId!=null) {
-            getCurrentCaseState(currentCaseId!);
+          if(userModel.currentCaseId!=null) {
+            getCurrentCaseState(userModel.currentCaseId!);
           }else{
             if(_taskTimer!=null) {
               _taskTimer!.cancel();
@@ -376,11 +400,12 @@ class _HomeState extends State<Home> {
         });
 
       }else{
+
         print(response.statusCode);
         ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(const SnackBar(content: Text('地址有誤，請重新輸入!')));
         setState(() {
-          isCallTaxiClicked = false;
-          isAllowGetLocation = true;
+          userModel.isCallTaxiClicked = false;
+          userModel.isAllowGetLocation = true;
         });
       }
     } catch (e) {
@@ -394,7 +419,7 @@ class _HomeState extends State<Home> {
     var userModel = context.read<UserModel>();
     try {
       final queryParams = {
-        'case_id': caseId.toString(),
+        'case_id': userModel.currentCaseId.toString(),
       };
 
       final response = await http.get(
@@ -407,10 +432,12 @@ class _HomeState extends State<Home> {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
         RideCase theCase = RideCase.fromJson(data);
+        userModel.rideCase = theCase;
 
         print(theCase.caseState);
-        switch(theCase.caseState) {
-          case 'wait': {userModel.statusCallerIndex=1;} break;
+        userModel.caseState = theCase.caseState!;
+        switch(userModel.rideCase?.caseState) {
+          case 'wait': {userModel.statusCallerIndex=0;} break;
           case 'way_to_catch': {userModel.statusCallerIndex=1;} break;
           case 'arrived': {userModel.statusCallerIndex=2;}break;
           case 'catched': {userModel.statusCallerIndex=2;}break;
@@ -419,6 +446,17 @@ class _HomeState extends State<Home> {
           default: {userModel.statusCallerIndex=0;}
           break;
         }
+        // print(theCase.caseState);
+        // switch(theCase.caseState) {
+        //   case 'wait': {userModel.statusCallerIndex=0;} break;
+        //   case 'way_to_catch': {userModel.statusCallerIndex=1;} break;
+        //   case 'arrived': {userModel.statusCallerIndex=2;}break;
+        //   case 'catched': {userModel.statusCallerIndex=2;}break;
+        //   case 'on_road': {userModel.statusCallerIndex=2;}break;
+        //   case 'finished': {userModel.statusCallerIndex=3;}break;
+        //   default: {userModel.statusCallerIndex=0;}
+        //   break;
+        // }
         setState(() {});
       }
     } catch (e) {

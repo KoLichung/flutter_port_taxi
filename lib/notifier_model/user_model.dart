@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../models/ride_case.dart';
 import '../models/user.dart';
 
 class UserModel extends ChangeNotifier {
@@ -13,8 +16,31 @@ class UserModel extends ChangeNotifier {
   String? platformType;
   String? deviceId;
 
+  // double? currentLat;
+  // double? currentLong;
+
   LatLng? currentPosition;
   int statusCallerIndex = 0;
+  String caseState='';
+
+  bool isEngDriverNeeded = false;
+  bool isCallTaxiClicked = false;
+  bool isAllowGetLocation = true;
+  bool isTextFieldEnable = true;
+  TextEditingController pickUpAddressController = TextEditingController();
+  TextEditingController dropOffAddressController = TextEditingController();
+
+  int? currentCaseId;
+  RideCase? rideCase;
+
+  Timer? taskTimer;
+
+  void timer (Function function){
+    taskTimer = Timer.periodic(const Duration(seconds:5), (timer){
+      function();
+    });
+  }
+
 
   void setUser(User theUser){
     _user = theUser;
@@ -40,5 +66,9 @@ class UserModel extends ChangeNotifier {
     _user?.email = newEmail;
     notifyListeners();
   }
+
+
+
+
 
 }

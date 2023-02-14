@@ -106,7 +106,7 @@ class _RegisterState extends State<Register> {
                 const Spacer(flex: 1,)
               ],
             ),
-            isLoading? const CircularProgressIndicator() : const SizedBox(),
+            isLoading? const Center(child: CircularProgressIndicator()) : const SizedBox(),
           ]
         ),
       ),

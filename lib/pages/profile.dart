@@ -45,28 +45,29 @@ class _ProfileState extends State<Profile> {
               const Icon(Icons.account_circle, size: 110, color: AppColor.blue,),
               const SizedBox(height: 60,),
               Consumer<UserModel>(builder: (context, userModel, child) =>
+                  (userModel.user!=null)?
                   CustomProfileTextUnit(
                     icon: Icons.account_circle_outlined,
                     title: userModel.user!.name!,
-                  ),
+                  )
+                  :
+                  Container(),
               ),
               Consumer<UserModel>(builder: (context, userModel, child) =>
+                  (userModel.user!=null)?
                   CustomProfileTextUnit(
                     icon: Icons.email_outlined,
                     title: userModel.user!.email!,
-                  ),
+                  )
+                      :
+                  Container(),
               ),
               const Spacer(flex: 1,),
               CustomOutlinedButton(
                   color: AppColor.red,
                   title: AppLocalizations.of(context)!.deleteAccount,
-                  onPressed: () async {
-                    final confirmBack = await _showDeleteDialog(context);
-                    if(confirmBack){
-                      print('here');
-                      var userModel = context.read<UserModel>();
-                      _deleteUserData(userModel.token!, userModel.user!.id!);
-                    }
+                  onPressed: () {
+                    _showDeleteDialog(context);
                   }
               ),
             ],
@@ -98,7 +99,8 @@ class _ProfileState extends State<Profile> {
                 elevation: 0
             ),
             onPressed: () {
-              Navigator.popAndPushNamed(context, '/log_in');
+              var userModel = context.read<UserModel>();
+              _deleteUserData(userModel.token!, userModel.user!.id!);
             },
             child: Text(AppLocalizations.of(context)!.delete)
         ),
@@ -125,8 +127,16 @@ class _ProfileState extends State<Profile> {
         },
       );
 
-      print(response.body);
+      // print(response.body);
 
+      if(response.body.contains('delete user')){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("成功刪除使用者!"),));
+        var userModel = context.read<UserModel>();
+        Navigator.popAndPushNamed(context, '/log_in');
+        userModel.removeUser(context);
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("未成功刪除使用者!請聯繫管理員~"),));
+      }
 
     } catch (e) {
       print(e);

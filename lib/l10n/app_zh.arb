@@ -5,12 +5,14 @@
     "currentAddress": "取得當前位置",
     "dropOffAddress": "下車位置",
     "inputDropOffAddress": "輸入下車位置",
+    "enterPickUpAddress": "請輸入您的上車地址！",
+    "addressWrong": "地址有誤，請重新輸入!",
     "order": "叫車",
     "my": "我的",
     "searchingForDrivers": "搜尋司機中...",
 
     "driver": "司機：",
-    "driverOnTheWay": "司機已在路上，約",
+    "driverOnTheWay": "司機已在路上，約 ",
     "arrivingMinutes": "分鐘抵達～",
 
     "arrivedMsg": "已抵達目的地，感謝您的搭乘",
@@ -32,6 +34,9 @@
     "oldPassword": "舊密碼",
     "newPassword": "新密碼",
     "password": "密碼",
+    "updatePasswordSuccess":"成功更新密碼",
+    "updatePasswordFailed": "無法更新資料",
+    "updateDataSuccess": "資料成功更新",
 
     "dontHaveAccount": "還沒有帳號？",
     "register": "註冊",
@@ -51,9 +56,10 @@
     "warning":"注意！",
     "deleteAccountNotice": "帳號刪除後，無法取回資料！",
     "cancel": "取消",
-    "delete": "確認刪除"
+    "delete": "確認刪除",
 
-
+    "userDeleteSuccess": "成功刪除使用者!",
+    "userDeleteFailed": "未成功刪除使用者!請聯繫管理員~"
 
 
 

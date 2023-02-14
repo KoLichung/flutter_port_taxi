@@ -31,6 +31,8 @@ class UserModel extends ChangeNotifier {
   TextEditingController dropOffAddressController = TextEditingController();
   String pickUpEngAddress = '';
   String dropOffEngAddress = '';
+  String pickUpZhAddress = '';
+  String dropOffZhAddress = '';
 
   int? currentCaseId;
   RideCase? rideCase;

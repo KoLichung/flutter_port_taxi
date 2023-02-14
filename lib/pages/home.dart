@@ -12,6 +12,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'dart:ui';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -30,10 +32,13 @@ class _HomeState extends State<Home> {
 
   Timer? _taskTimer;
 
+
+
   void _getUserLocation() async {
     LocationPermission permission;
     permission = await Geolocator.requestPermission();
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
     setState(() {
       var userModel = context.read<UserModel>();
       userModel.currentPosition = LatLng(position.latitude, position.longitude);
@@ -44,11 +49,21 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void _liveLocation(){
+    LocationSettings locationSettings = const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 100,);
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position position){
+      currentLat = position.latitude;
+      currentLong= position.longitude;
+    });
+  }
+
   @override
   void initState() {
     var userModel = context.read<UserModel>();
     super.initState();
     _getUserLocation();
+
     if(userModel.currentCaseId != null){
       _taskTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
         getCurrentCaseState(userModel.currentCaseId!);
@@ -140,7 +155,11 @@ class _HomeState extends State<Home> {
                         )
                     ),
                     onPressed: userModel.isAllowGetLocation == true
-                        ? (){ getHttpConvertToAddress(currentLat!, currentLong!); }
+                        ? (){
+                              getHttpConvertToZhOnAddress(currentLat!, currentLong!);
+                              getHttpConvertToEngOnAddress(currentLat!, currentLong!);
+                              _liveLocation();
+                          }
                         : null,
                     child: Text(AppLocalizations.of(context)!.currentAddress)
                 ),
@@ -189,7 +208,6 @@ class _HomeState extends State<Home> {
                         setState(() {
                           userModel.isEngDriverNeeded = value!;
                           print('isEngDriverNeeded: ${userModel.isEngDriverNeeded}');
-
                         });
                 },),
             ),
@@ -213,7 +231,7 @@ class _HomeState extends State<Home> {
                 ? null //this null is to disable button
                 :(){
                       if(userModel.pickUpAddressController.text.isEmpty){
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("請輸入您的上車地址！"),));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.enterPickUpAddress),));
                       } else {
                         setState(() {
                           userModel.isCallTaxiClicked = true;
@@ -232,7 +250,6 @@ class _HomeState extends State<Home> {
 
   waitingTaxiLayout(){
     var userModel = context.read<UserModel>();
-
     return Container(
       alignment: Alignment.center,
       child: Column(
@@ -287,7 +304,7 @@ class _HomeState extends State<Home> {
           Text('${AppLocalizations.of(context)!.pickUpAddress}：${userModel.pickUpAddressController.text}'),
           const SizedBox(height: 10,),
           userModel.dropOffAddressController.text.isNotEmpty
-              ? Text('${AppLocalizations.of(context)!.pickUpAddress}：${userModel.dropOffAddressController.text}')
+              ? Text('${AppLocalizations.of(context)!.dropOffAddress}：${userModel.dropOffAddressController.text}')
               : Text('${AppLocalizations.of(context)!.dropOffAddress}：')
           // const Spacer(flex: 1,),
         ],
@@ -315,11 +332,13 @@ class _HomeState extends State<Home> {
                   userModel.isCallTaxiClicked = false;
                   userModel.isAllowGetLocation = true;
                   userModel.isEngDriverNeeded = false;
+                  userModel.isTextFieldEnable = true;
                   userModel.pickUpAddressController.text = '';
                   userModel.dropOffAddressController.text = '';
                   userModel.currentCaseId = null;
                   _taskTimer!.cancel();
                 });
+                _getUserLocation();
               })
         ],
       ),
@@ -342,11 +361,9 @@ class _HomeState extends State<Home> {
   }
 
 
-  Future getHttpConvertToAddress(double lat, double long) async{
+  Future getHttpConvertToZhOnAddress(double lat, double long) async{
     var userModel = context.read<UserModel>();
-
-    //如果是英文使用者語言要把 &language=zh-TW 刪掉
-    // String path = '${ServiceApi.currentAddress}25.03369,121.564128&key=$geocodingKey&language=zh-TW';
+    //如果地址要用英文顯示，要把 &language=zh-TW 刪掉
     String path = '${ServerApi.currentAddress}$lat,$long&key=$geocodingKey&language=zh-TW';
 
     try {
@@ -356,7 +373,10 @@ class _HomeState extends State<Home> {
         print(data['status']);
         print(data['results'][0]['formatted_address']);
         setState(() {
-          userModel.pickUpAddressController.text=data['results'][0]['formatted_address'];
+          if(window.locale.languageCode == 'zh'){
+            userModel.pickUpAddressController.text=data['results'][0]['formatted_address'];
+          }
+          userModel.pickUpZhAddress=data['results'][0]['formatted_address'];
         });
       }
     } catch (e) {
@@ -364,17 +384,13 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future getHttpConvertToEngOnAddress(double lat, double long) async{
-    //這邊要怎麼處理？
-    //英文語系 = 輸入英文
-    //中文語系 = 輸入中文
-    //如果是英文語系，他輸入英文地址，要把英文地址轉成中文並存回給 server
-    //如果是中文語系，他輸入中文地址，要把中文地址轉成英文並存回給 server
-    //後台會有中英文的 on 跟 off 總共四個地址
 
+  //如果是中文語系，他輸入中文地址，要把中文地址轉成英文並存回給 server
+  //如果不是中文語系，app是英文語系，會輸入英文地址，要把英文地址轉成中文並存回給 server
+  //dropOff address 可以為空
+ Future getHttpConvertToEngOnAddress(double lat, double long) async{
     var userModel = context.read<UserModel>();
     String path = '${ServerApi.currentAddress}$lat,$long&key=$geocodingKey';
-
     try {
       final response = await http.get(Uri.parse(path));
       if (response.statusCode == 200) {
@@ -382,6 +398,9 @@ class _HomeState extends State<Home> {
         print(data['status']);
         print(data['results'][0]['formatted_address']);
         setState(() {
+          if(window.locale.languageCode == 'en'){
+            userModel.pickUpAddressController.text=data['results'][0]['formatted_address'];
+          }
           userModel.pickUpEngAddress=data['results'][0]['formatted_address'];
         });
       }
@@ -395,11 +414,11 @@ class _HomeState extends State<Home> {
     String path = ServerApi.postNewCase;
     try {
       final bodyParameters = {
-        'on_address' : userModel.pickUpAddressController.text,
-        'off_address': userModel.dropOffAddressController.text.isEmpty ? '未指名' : userModel.dropOffAddressController.text,
+        'on_address' : window.locale.languageCode == 'zh' ? userModel.pickUpAddressController.text : userModel.pickUpZhAddress,
+        'off_address': window.locale.languageCode == 'zh' ? userModel.dropOffAddressController.text : '',
         'is_english': userModel.isEngDriverNeeded,
-        'on_address_en':userModel.pickUpEngAddress,
-        'off_address_en':userModel.dropOffEngAddress
+        'on_address_en': window.locale.languageCode == 'en' ? userModel.pickUpAddressController.text : userModel.pickUpEngAddress,
+        'off_address_en': window.locale.languageCode == 'en' ? userModel.dropOffAddressController.text : ''
       };
       print(bodyParameters);
 
@@ -433,7 +452,7 @@ class _HomeState extends State<Home> {
       }else{
 
         print(response.statusCode);
-        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(const SnackBar(content: Text('地址有誤，請重新輸入!')));
+        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addressWrong)));
         setState(() {
           userModel.isCallTaxiClicked = false;
           userModel.isAllowGetLocation = true;

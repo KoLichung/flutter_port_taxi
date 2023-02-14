@@ -130,12 +130,12 @@ class _ProfileState extends State<Profile> {
       // print(response.body);
 
       if(response.body.contains('delete user')){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("成功刪除使用者!"),));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.userDeleteSuccess),));
         var userModel = context.read<UserModel>();
         Navigator.popAndPushNamed(context, '/log_in');
         userModel.removeUser(context);
       }else{
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("未成功刪除使用者!請聯繫管理員~"),));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.userDeleteFailed),));
       }
 
     } catch (e) {

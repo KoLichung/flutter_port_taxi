@@ -113,10 +113,10 @@ class _EditPasswordState extends State<EditPassword> {
 
       Map<String, dynamic> map = json.decode(utf8.decode(response.body.runes.toList()));
       if(map['message']!=null){
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("成功更新密碼！"),));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.updatePasswordSuccess),));
         Navigator.pop(context);
       }else{
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("無法更新資料 密碼有誤！"),));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.updatePasswordFailed),));
       }
 
     } catch (e) {

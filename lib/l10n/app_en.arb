@@ -6,6 +6,8 @@
   "currentAddress": "Current Address",
   "dropOffAddress": "Drop off Address",
   "inputDropOffAddress": "Input drop off address",
+  "enterPickUpAddress": "Please enter the pickup address!",
+  "addressWrong": "Please enter the correct address!",
   "order": "Order",
   "my": "My",
   "searchingForDrivers": "searching for drivers",
@@ -32,6 +34,11 @@
   "oldPassword": "Old Password",
   "newPassword": "New Password",
   "password": "Password",
+  "updatePasswordSuccess":"Successfully updated password",
+  "updatePasswordFailed": "Unable to update information!",
+  "updateDataSuccess": "Data updated successfully",
+
+
 
   "dontHaveAccount": "Don't have an account?",
   "register": "Register",
@@ -51,7 +58,10 @@
   "warning":"Warning",
   "deleteAccountNotice": "After the account is deleted, the data cannot be retrieved!",
   "cancel": "cancel",
-  "delete": "delete"
+  "delete": "delete",
+
+  "userDeleteSuccess": "Successfully deleted user!",
+  "userDeleteFailed": "Failed to delete user, please contact administrator!"
 
 
 }

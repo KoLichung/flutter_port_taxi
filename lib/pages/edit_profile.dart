@@ -106,7 +106,7 @@ class _EditProfileState extends State<EditProfile> {
       if(response.statusCode == 200){
         print('success update profile');
         userModel.updateProfile(nameController.text,  emailController.text);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("成功更新！")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.updateDataSuccess)));
         Navigator.pop(context);
       }
     } catch (e){

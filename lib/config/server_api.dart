@@ -1,8 +1,8 @@
 
 class ServerApi{
 
-  static const _host ='207.148.95.172';
-  // static const _host='127.0.0.1:8000';
+  // static const _host ='207.148.95.172';
+  static const _host='127.0.0.1:8000';
   // static const _host='localhost:8000';
   static const userCreate = '/api/user/create/';
   static const userToken = '/api/user/token/';

@@ -87,9 +87,9 @@ class _TabPageState extends State<TabPage> {
             _selectedIndex = index;
           });
         },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.local_taxi_rounded), label: '叫車'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle_rounded), label: '我的'),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: const Icon(Icons.local_taxi_rounded), label: AppLocalizations.of(context)!.order),
+          BottomNavigationBarItem(icon: const Icon(Icons.account_circle_rounded), label: AppLocalizations.of(context)!.my),
         ],
       ),
     );

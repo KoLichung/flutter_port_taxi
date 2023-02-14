@@ -1,6 +1,57 @@
 {
-  "helloWorld": "Hello World!",
-  "@helloWorld": {
-    "description": "The conventional newborn programmer greeting"
-  }
+  "hello": "Hello",
+
+  "pickUpAddress": "Pick Up Address",
+  "pressRightBtnGetAddress": "Press right button get your address",
+  "currentAddress": "Current Address",
+  "dropOffAddress": "Drop off Address",
+  "inputDropOffAddress": "Input drop off address",
+  "order": "Order",
+  "my": "My",
+  "searchingForDrivers": "searching for drivers",
+
+  "driver": "Driver:",
+  "driverOnTheWay": "driver is arriving in ",
+  "arrivingMinutes": "minutes",
+
+  "arrivedMsg": "We have arrived at our destination, thank you for your ride",
+  "ok": "OK",
+
+  "logOut": "LogOut",
+  "logIn": "LogIn",
+
+  "profile": "Profile",
+  "rideRecord": "Ride Record",
+
+  "edit": "edit",
+  "deleteAccount": "Delete Account",
+
+  "name": "User Name",
+  "save": "Save",
+  "editPassword": "Edit Password",
+  "oldPassword": "Old Password",
+  "newPassword": "New Password",
+  "password": "Password",
+
+  "dontHaveAccount": "Don't have an account?",
+  "register": "Register",
+
+  "emailPasswordError": "Email or Password error!",
+
+  "agreement": "By registering, you agree to ",
+  "and": "and",
+  "termsOfUse": "Terms of Use",
+  "privacyPolicy": "Privacy Policies",
+  "back": "back",
+
+  "enterCompleteInfo": "Please enter complete information!",
+
+  "wrongEmail": "Email error or this email is already registered!",
+
+  "warning":"Warning",
+  "deleteAccountNotice": "After the account is deleted, the data cannot be retrieved!",
+  "cancel": "cancel",
+  "delete": "delete"
+
+
 }

@@ -9,6 +9,8 @@ import '../widget/custom_log_in_text_field.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 
 
@@ -49,7 +51,7 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 60,),
                 CustomLogInTextField(
                   icon: Icons.account_circle_outlined,
-                  hintText: '使用者姓名',
+                  hintText: AppLocalizations.of(context)!.name,
                   controller: nameController,
                 ),
                 const SizedBox(height: 15,),
@@ -62,37 +64,36 @@ class _RegisterState extends State<Register> {
                 CustomLogInTextField(
                   isObscureText: true,
                   icon: Icons.lock_outline,
-                  hintText: '密碼',
+                  hintText: AppLocalizations.of(context)!.password,
                   controller: passwordController,
                 ),
                 const Spacer(flex: 2,),
                 CustomFixedWidthElevatedButton(
                   color: AppColor.blue,
-                  title: '註冊',
+                  title: AppLocalizations.of(context)!.register,
                   onPressed: (){
                     if(nameController.text == ''||emailController.text ==''||passwordController.text==''){
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("請輸入完整資料！"),));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.enterCompleteInfo),));
                     } else{
                       User user = User(name: nameController.text, email: emailController.text);
                       _postCreateUser(user, passwordController.text);
                       isLoading = true;
                       setState(() {});
                     }
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const TabPage()), (Route<dynamic> route) => false, );
                   },
                 ),
                 const SizedBox(height: 10,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('註冊即代表您同意 ', style: TextStyle(fontSize: 14),),
+                    Text(AppLocalizations.of(context)!.agreement, style: const TextStyle(fontSize: 12),),
                     GestureDetector(
                       onTap: (){},
-                      child: const Text('會員條款', style: TextStyle(fontWeight: FontWeight.bold, color: AppColor.blue, decoration: TextDecoration.underline, fontSize: 14), ),),
-                    const Text( ' 與 ', style: TextStyle(fontSize: 14),),
+                      child: Text(AppLocalizations.of(context)!.termsOfUse, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColor.blue, decoration: TextDecoration.underline, fontSize: 12), ),),
+                    Text( ' ${AppLocalizations.of(context)!.and} ', style: const TextStyle(fontSize: 12),),
                     GestureDetector(
                         onTap: (){},
-                        child: const Text( '隱私權政策', style: TextStyle(fontWeight: FontWeight.bold,color: AppColor.blue, decoration: TextDecoration.underline, fontSize: 14), )),
+                        child: Text( AppLocalizations.of(context)!.privacyPolicy, style: const TextStyle(fontWeight: FontWeight.bold,color: AppColor.blue, decoration: TextDecoration.underline, fontSize: 12), )),
                   ],
                 ),
                 const SizedBox(height: 10,),
@@ -100,7 +101,7 @@ class _RegisterState extends State<Register> {
                     onPressed: () {
                       Navigator.pushNamed(context, '/log_in');
                     },
-                    child: const Text('返回上一頁')
+                    child: Text(AppLocalizations.of(context)!.back)
                 ),
                 const Spacer(flex: 1,)
               ],
@@ -144,16 +145,13 @@ class _RegisterState extends State<Register> {
         User? theUser = await _getUserData(token);
         userModel.setUser(theUser!);
 
-        // _httpPostFCMDevice();
-        //
-        // final prefs = await SharedPreferences.getInstance();
-        // await prefs.setString('user_token', token);
+        // Navigator.of(context).popUntil((route) => route.isFirst);
+        // Navigator.popUntil(context, ModalRoute.withName('/main'));
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const TabPage()), (Route<dynamic> route) => false, );
 
-        Navigator.of(context).popUntil((route) => route.isFirst);
-        // Navigator.popUntil(context, ModalRoute.withName('/loginRegister'));
 
       }else{
-        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(const SnackBar(content: Text('email錯誤或此email已經註冊！')));
+        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.wrongEmail)));
       }
 
 

@@ -7,6 +7,8 @@ import '../notifier_model/user_model.dart';
 import '../widget/custom_edit_profile_text_field.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class EditPassword extends StatefulWidget {
   const EditPassword({Key? key}) : super(key: key);
@@ -42,7 +44,7 @@ class _EditPasswordState extends State<EditPassword> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: TextButton(
-              child: const Text('儲存', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+              child: Text(AppLocalizations.of(context)!.save, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
               onPressed: (){
                 var userModel = context.read<UserModel>();
                 if(oldPasswordController.text =='' ){
@@ -63,20 +65,20 @@ class _EditPasswordState extends State<EditPassword> {
             children: [
               const Icon(Icons.account_circle, size: 110, color: AppColor.blue,),
               const SizedBox(height: 60,),
-              const SizedBox(
+              SizedBox(
                 width: 320,
                 height: 40,
-                child: Text('舊密碼',style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
+                child: Text(AppLocalizations.of(context)!.oldPassword,style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
               ),
               CustomEditProfileTextField(
                 isObscureText: true,
                 controller: oldPasswordController,
               ),
               const SizedBox(height: 20,),
-              const SizedBox(
+              SizedBox(
                 width: 320,
                 height: 40,
-                child: Text('新密碼',style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
+                child: Text(AppLocalizations.of(context)!.newPassword, style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
               ),
               CustomEditProfileTextField(
                 isObscureText: true,

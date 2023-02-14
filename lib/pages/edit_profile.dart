@@ -8,6 +8,8 @@ import '../notifier_model/user_model.dart';
 import '../widget/custom_edit_profile_text_field.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -43,7 +45,7 @@ class _EditProfileState extends State<EditProfile> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: TextButton(
-              child: const Text('儲存', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+              child: Text(AppLocalizations.of(context)!.save, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
               onPressed: (){
                 var userModel = context.read<UserModel>();
                 _putUpdateProfile(userModel.token!, nameController.text, emailController.text );
@@ -58,10 +60,10 @@ class _EditProfileState extends State<EditProfile> {
               children: [
                 const Icon(Icons.account_circle, size: 110, color: AppColor.blue,),
                 const SizedBox(height: 60,),
-                const SizedBox(
+                SizedBox(
                   width: 320,
                   height: 40,
-                  child: Text('姓名',style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
+                  child: Text(AppLocalizations.of(context)!.name,style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 16),),
                 ),
                 CustomEditProfileTextField(controller: nameController,),
                 const SizedBox(height: 20,),
@@ -75,7 +77,7 @@ class _EditProfileState extends State<EditProfile> {
                 const Spacer(),
                 CustomOutlinedButton(
                     color: AppColor.blue,
-                    title: '修改密碼',
+                    title: AppLocalizations.of(context)!.editPassword,
                     onPressed: (){
                       Navigator.pushNamed(context, '/edit_password');
                     }),

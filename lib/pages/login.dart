@@ -11,6 +11,8 @@ import '../widget/custom_log_in_text_field.dart';
 import 'home.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 
 class LogIn extends StatefulWidget {
@@ -57,7 +59,7 @@ class _LogInState extends State<LogIn> {
             const SizedBox(height: 15,),
             CustomLogInTextField(
               icon: Icons.lock_outline,
-              hintText: '密碼',
+              hintText: AppLocalizations.of(context)!.password,
               controller: passwordController,
               isObscureText: true,
             ),
@@ -73,23 +75,21 @@ class _LogInState extends State<LogIn> {
             const Spacer(flex: 2,),
             CustomFixedWidthElevatedButton(
               color: AppColor.blue,
-              title: '登入',
+              title: AppLocalizations.of(context)!.logIn,
               onPressed: (){
                 _emailLogIn(context, emailController.text, passwordController.text);
-
-                // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Home()), (Route<dynamic> route) => false, );
-              },
+                },
             ),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('還沒有帳號？'),
+                Text(AppLocalizations.of(context)!.dontHaveAccount),
                 TextButton(
-                  child: const Text('點這裡註冊', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),),
+                  child: Text(AppLocalizations.of(context)!.register, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),),
                   onPressed: (){
                     // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Register()), (Route<dynamic> route) => false, );
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Register()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const Register()));
                   },
                 ),
 
@@ -133,8 +133,8 @@ class _LogInState extends State<LogIn> {
       }else{
         print(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("email 或 密碼錯誤！"),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.emailPasswordError),
             )
         );
       }

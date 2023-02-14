@@ -1,3 +1,60 @@
 {
-    "helloWorld": "哈囉 您好!"
+    "hello": "哈囉!",
+    "pickUpAddress": "上車位置",
+    "pressRightBtnGetAddress": "按右方按鈕取得目前地址",
+    "currentAddress": "取得當前位置",
+    "dropOffAddress": "下車位置",
+    "inputDropOffAddress": "輸入下車位置",
+    "order": "叫車",
+    "my": "我的",
+    "searchingForDrivers": "搜尋司機中...",
+
+    "driver": "司機：",
+    "driverOnTheWay": "司機已在路上，約",
+    "arrivingMinutes": "分鐘抵達～",
+
+    "arrivedMsg": "已抵達目的地，感謝您的搭乘",
+    "ok": "確認",
+
+    "logOut": "登出",
+    "logIn": "登入",
+
+    "profile": "個人資料",
+    "rideRecord": "乘車紀錄",
+
+    "edit": "修改資料",
+    "deleteAccount": "刪除帳號",
+
+    "name": "使用者姓名",
+    "save": "儲存",
+
+    "editPassword": "修改密碼",
+    "oldPassword": "舊密碼",
+    "newPassword": "新密碼",
+    "password": "密碼",
+
+    "dontHaveAccount": "還沒有帳號？",
+    "register": "註冊",
+
+    "emailPasswordError": "Email或密碼錯誤！",
+
+    "agreement": "註冊即代表您同意",
+    "and": "與",
+    "termsOfUse": "會員條款",
+    "privacyPolicy": "隱私權政策",
+    "back": "返回上一頁",
+
+    "enterCompleteInfo": "請輸入完整資料",
+
+    "wrongEmail": "Email錯誤或此email已經註冊！",
+
+    "warning":"注意！",
+    "deleteAccountNotice": "帳號刪除後，無法取回資料！",
+    "cancel": "取消",
+    "delete": "確認刪除"
+
+
+
+
+
 }

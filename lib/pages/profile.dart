@@ -8,6 +8,8 @@ import '../config/server_api.dart';
 import '../models/user.dart';
 import '../notifier_model/user_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -29,7 +31,7 @@ class _ProfileState extends State<Profile> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: TextButton(
-              child: const Text('修改資料', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+              child: Text(AppLocalizations.of(context)!.edit, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
               onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=> const EditProfile()));
               },
@@ -57,7 +59,7 @@ class _ProfileState extends State<Profile> {
               const Spacer(flex: 1,),
               CustomOutlinedButton(
                   color: AppColor.red,
-                  title: '刪除帳號',
+                  title: AppLocalizations.of(context)!.deleteAccount,
                   onPressed: () async {
                     final confirmBack = await _showDeleteDialog(context);
                     if(confirmBack){
@@ -77,8 +79,8 @@ class _ProfileState extends State<Profile> {
   Future _showDeleteDialog(BuildContext context) {
     // Init
     AlertDialog dialog = AlertDialog(
-      title: const Text("注意!"),
-      content: const Text('帳號刪除後，無法取回資料！'),
+      title: Text(AppLocalizations.of(context)!.warning),
+      content: Text(AppLocalizations.of(context)!.deleteAccountNotice),
       actions: [
         ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -88,7 +90,7 @@ class _ProfileState extends State<Profile> {
             onPressed: () {
               Navigator.pop(context, false);
             },
-            child: const Text("取消")
+            child:Text(AppLocalizations.of(context)!.cancel)
         ),
         ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -98,7 +100,7 @@ class _ProfileState extends State<Profile> {
             onPressed: () {
               Navigator.popAndPushNamed(context, '/log_in');
             },
-            child: const Text("確認刪除")
+            child: Text(AppLocalizations.of(context)!.delete)
         ),
       ],
     );

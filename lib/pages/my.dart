@@ -3,7 +3,7 @@ import 'package:flutter_port_taxi/widget/custom_my_page_button.dart';
 import 'package:flutter_port_taxi/pages/profile.dart';
 import 'package:flutter_port_taxi/pages/ride_record_list.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../notifier_model/user_model.dart';
 import 'login.dart';
 
@@ -19,7 +19,6 @@ class _MyState extends State<My> {
 
   @override
   Widget build(BuildContext context) {
-
 
     return Scaffold(
       appBar: PreferredSize(
@@ -43,7 +42,7 @@ class _MyState extends State<My> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(' 哈囉! ', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+                        Text(' ${AppLocalizations.of(context)!.hello} ', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
                         Consumer<UserModel>(builder: (context, userModel, child)=> userModel.isLogin()
                             ? Text(userModel.user!.name!, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800))
                             : const SizedBox()
@@ -51,7 +50,7 @@ class _MyState extends State<My> {
                         ],
                     ),
                   TextButton(
-                    child: const Text('(登出)', style: TextStyle(color: Colors.white),),
+                    child: Text('(${AppLocalizations.of(context)!.logOut})', style: const TextStyle(color: Colors.white),),
                     onPressed: (){
                       var userModel = context.read<UserModel>();
                       userModel.removeUser(context);
@@ -69,7 +68,7 @@ class _MyState extends State<My> {
         children: [
           const SizedBox(height: 5,),
           CustomMyPageButton(
-            title: '個人資料',
+            title: AppLocalizations.of(context)!.profile,
             onPressed: (){
               Navigator.push(
                   context,
@@ -78,7 +77,7 @@ class _MyState extends State<My> {
             },
           ),
           CustomMyPageButton(
-            title: '乘車紀錄',
+            title: AppLocalizations.of(context)!.rideRecord,
             onPressed: (){
               Navigator.push(
                   context,

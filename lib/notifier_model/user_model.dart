@@ -29,17 +29,12 @@ class UserModel extends ChangeNotifier {
   bool isTextFieldEnable = true;
   TextEditingController pickUpAddressController = TextEditingController();
   TextEditingController dropOffAddressController = TextEditingController();
+  String pickUpEngAddress = '';
+  String dropOffEngAddress = '';
 
   int? currentCaseId;
   RideCase? rideCase;
 
-  Timer? taskTimer;
-
-  void timer (Function function){
-    taskTimer = Timer.periodic(const Duration(seconds:5), (timer){
-      function();
-    });
-  }
 
 
   void setUser(User theUser){

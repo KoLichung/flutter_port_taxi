@@ -6,7 +6,6 @@ import '../config/color.dart';
 import '../config/server_api.dart';
 import '../models/ride_case.dart';
 import '../notifier_model/user_model.dart';
-import 'my.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -23,24 +22,13 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  // bool isEngDriverNeeded = false;
-  // bool isCallTaxiClicked = false;
-  // bool isAllowGetLocation = true;
-  // bool isTextFieldEnable = true;
-  // TextEditingController pickUpAddressController = TextEditingController();
-  // TextEditingController dropOffAddressController = TextEditingController();
-
 
   String geocodingKey = 'AIzaSyCdP86OffSMXL82nbHA0l6K0W2xrdZ5xLk';
 
-  // LatLng? currentPosition;
   double? currentLat;
   double? currentLong;
 
   Timer? _taskTimer;
-
-  // int? currentCaseId;
-  // RideCase? rideCase;
 
   void _getUserLocation() async {
     LocationPermission permission;
@@ -58,13 +46,29 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    var userModel = context.read<UserModel>();
     super.initState();
     _getUserLocation();
+    if(userModel.currentCaseId != null){
+      _taskTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        getCurrentCaseState(userModel.currentCaseId!);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if(_taskTimer!=null){
+      print('cancel timer');
+      _taskTimer!.cancel();
+      _taskTimer = null;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(AppLocalizations.of(context)!.helloWorld);
+    print(AppLocalizations.of(context)!.hello);
 
     return Scaffold(
       body: Center(
@@ -93,11 +97,10 @@ class _HomeState extends State<Home> {
 
   callTaxiLayout(){
     var userModel = context.read<UserModel>();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('上車位置',style: TextStyle(color: AppColor.blue, fontSize: 12)),
+        Text(AppLocalizations.of(context)!.pickUpAddress, style: const TextStyle(color: AppColor.blue, fontSize: 12)),
         const SizedBox(height: 2,),
         Row(
           children: [
@@ -114,10 +117,10 @@ class _HomeState extends State<Home> {
                     enabled: userModel.isTextFieldEnable,
                     style: const TextStyle(fontSize: 14),
                     controller: userModel.pickUpAddressController,
-                    decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 14),
-                        hintStyle: TextStyle(fontSize: 14),
-                        hintText: '按右方按鈕取得目前地址',
+                    decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.only(bottom: 14),
+                        hintStyle: const TextStyle(fontSize: 14),
+                        hintText: AppLocalizations.of(context)!.pressRightBtnGetAddress,
                         border: InputBorder.none),
                   )
               ),
@@ -139,14 +142,14 @@ class _HomeState extends State<Home> {
                     onPressed: userModel.isAllowGetLocation == true
                         ? (){ getHttpConvertToAddress(currentLat!, currentLong!); }
                         : null,
-                    child: const Text('取得當前位置')
+                    child: Text(AppLocalizations.of(context)!.currentAddress)
                 ),
               ),
             )
           ],
         ),
         const SizedBox(height: 5,),
-        const Text('下車位置',style: TextStyle(color: AppColor.blue, fontSize: 12)),
+        Text(AppLocalizations.of(context)!.dropOffAddress, style: const TextStyle(color: AppColor.blue, fontSize: 12)),
         const SizedBox(height: 2,),
         Row(
           children: [
@@ -161,10 +164,10 @@ class _HomeState extends State<Home> {
                 child: TextField(
                   enabled: userModel.isTextFieldEnable,
                   controller: userModel.dropOffAddressController,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.only(bottom: 14),
-                    hintStyle: TextStyle(fontSize: 14),
-                    hintText: '輸入下車位置',
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(bottom: 14),
+                    hintStyle: const TextStyle(fontSize: 14),
+                    hintText: AppLocalizations.of(context)!.dropOffAddress,
                       border: InputBorder.none
                   ),
                 )
@@ -206,7 +209,6 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(15)
                 )
             ),
-            // onPressed: isCallTaxiClicked == false ? _callButtonCallback : null,
             onPressed: userModel.isCallTaxiClicked
                 ? null //this null is to disable button
                 :(){
@@ -221,7 +223,7 @@ class _HomeState extends State<Home> {
                         });
                       }
                   },
-            child: Text( userModel.isCallTaxiClicked == false ? '叫車' : '搜尋司機中...', style: const TextStyle(fontSize: 18),),
+            child: Text( userModel.isCallTaxiClicked == false ? AppLocalizations.of(context)!.order : AppLocalizations.of(context)!.searchingForDrivers, style: const TextStyle(fontSize: 18),),
           ),
         )
       ],
@@ -238,7 +240,7 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // const Spacer(flex: 1,),
-          Text('司機：${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          Text('${AppLocalizations.of(context)!.driver} ${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           const SizedBox(height: 10,),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -250,14 +252,13 @@ class _HomeState extends State<Home> {
           Text.rich(
               TextSpan(
                   children: [
-                    TextSpan(text: '${userModel.rideCase!.driverName!}司機在路上，約 ', style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
-                    TextSpan(text: userModel.rideCase?.expectMinutes.toString(), style: const TextStyle(color: AppColor.red, fontWeight: FontWeight.bold)),
-                    const TextSpan(text: ' 分鐘到達～', style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
-
+                    TextSpan(text:'${userModel.rideCase!.driverName!} ${AppLocalizations.of(context)!.driverOnTheWay}', style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
+                    TextSpan(text: '${userModel.rideCase?.expectMinutes.toString()} ', style: const TextStyle(color: AppColor.red, fontWeight: FontWeight.bold)),
+                    TextSpan(text:  AppLocalizations.of(context)!.arrivingMinutes, style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold)),
                   ]
               )),
           const SizedBox(height: 10,),
-          Flexible(child: Text('上車位置：${userModel.pickUpAddressController.text}')),
+          Flexible(child: Text('${AppLocalizations.of(context)!.pickUpAddress}：${userModel.pickUpAddressController.text}')),
           // const Spacer(flex: 1,),
         ],
       ),
@@ -274,7 +275,7 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // const Spacer(flex: 1,),
-          Text('司機：${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          Text('${AppLocalizations.of(context)!.driver}：${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           const SizedBox(height: 10,),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -283,11 +284,11 @@ class _HomeState extends State<Home> {
               CarNumberTag(carNumber: userModel.rideCase!.carIdNumber!)
             ],),
           const SizedBox(height: 10,),
-          Text('上車：${userModel.pickUpAddressController.text}'),
+          Text('${AppLocalizations.of(context)!.pickUpAddress}：${userModel.pickUpAddressController.text}'),
           const SizedBox(height: 10,),
           userModel.dropOffAddressController.text.isNotEmpty
-              ? Text('下車：${userModel.dropOffAddressController.text}')
-              : const Text('下車：未指名')
+              ? Text('${AppLocalizations.of(context)!.pickUpAddress}：${userModel.dropOffAddressController.text}')
+              : Text('${AppLocalizations.of(context)!.dropOffAddress}：')
           // const Spacer(flex: 1,),
         ],
       ),
@@ -295,22 +296,25 @@ class _HomeState extends State<Home> {
   }
 
   arrivedDestinationLayout(){
-    var userModel = context.read<UserModel>();
-
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('已抵達目的地，感謝您的搭乘！', style: TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 18),),
+          SizedBox(
+            width: 260,
+            // alignment: Alignment.center,
+            child: Text(AppLocalizations.of(context)!.arrivedMsg, style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 18),),
+          ),
           CustomOutlinedButton(
               color: AppColor.blue,
-              title: '確認',
+              title: AppLocalizations.of(context)!.ok,
               onPressed: (){
                 setState(() {
                   var userModel = context.read<UserModel>();
                   userModel.statusCallerIndex = 0;
                   userModel.isCallTaxiClicked = false;
                   userModel.isAllowGetLocation = true;
+                  userModel.isEngDriverNeeded = false;
                   userModel.pickUpAddressController.text = '';
                   userModel.dropOffAddressController.text = '';
                   userModel.currentCaseId = null;
@@ -360,6 +364,32 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future getHttpConvertToEngOnAddress(double lat, double long) async{
+    //這邊要怎麼處理？
+    //英文語系 = 輸入英文
+    //中文語系 = 輸入中文
+    //如果是英文語系，他輸入英文地址，要把英文地址轉成中文並存回給 server
+    //如果是中文語系，他輸入中文地址，要把中文地址轉成英文並存回給 server
+    //後台會有中英文的 on 跟 off 總共四個地址
+
+    var userModel = context.read<UserModel>();
+    String path = '${ServerApi.currentAddress}$lat,$long&key=$geocodingKey';
+
+    try {
+      final response = await http.get(Uri.parse(path));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        print(data['status']);
+        print(data['results'][0]['formatted_address']);
+        setState(() {
+          userModel.pickUpEngAddress=data['results'][0]['formatted_address'];
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future _postCreateCase() async {
     var userModel = context.read<UserModel>();
     String path = ServerApi.postNewCase;
@@ -368,6 +398,8 @@ class _HomeState extends State<Home> {
         'on_address' : userModel.pickUpAddressController.text,
         'off_address': userModel.dropOffAddressController.text.isEmpty ? '未指名' : userModel.dropOffAddressController.text,
         'is_english': userModel.isEngDriverNeeded,
+        'on_address_en':userModel.pickUpEngAddress,
+        'off_address_en':userModel.dropOffEngAddress
       };
       print(bodyParameters);
 
@@ -387,7 +419,6 @@ class _HomeState extends State<Home> {
         userModel.currentCaseId = map['case_id'];
 
         //每五秒要抓一次資料 getCurrentCaseState
-        // 要讓他不論切到哪個畫面都能夠在背景底下持續計時
 
         _taskTimer = Timer.periodic(const Duration(seconds:5), (timer){
           if(userModel.currentCaseId!=null) {
@@ -446,17 +477,6 @@ class _HomeState extends State<Home> {
           default: {userModel.statusCallerIndex=0;}
           break;
         }
-        // print(theCase.caseState);
-        // switch(theCase.caseState) {
-        //   case 'wait': {userModel.statusCallerIndex=0;} break;
-        //   case 'way_to_catch': {userModel.statusCallerIndex=1;} break;
-        //   case 'arrived': {userModel.statusCallerIndex=2;}break;
-        //   case 'catched': {userModel.statusCallerIndex=2;}break;
-        //   case 'on_road': {userModel.statusCallerIndex=2;}break;
-        //   case 'finished': {userModel.statusCallerIndex=3;}break;
-        //   default: {userModel.statusCallerIndex=0;}
-        //   break;
-        // }
         setState(() {});
       }
     } catch (e) {

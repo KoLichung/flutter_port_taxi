@@ -43,6 +43,8 @@ dependencies:
   intl: ^0.17.0
   shared_preferences: ^2.0.17
   url_launcher: ^6.1.10
+  syncfusion_flutter_datepicker: ^19.4.54
+
 
 dev_dependencies:
   flutter_test:

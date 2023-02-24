@@ -13,7 +13,7 @@ class CustomOutlinedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
           side: BorderSide(color: color),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20)

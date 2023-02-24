@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_port_taxi/config/color.dart';
 import 'package:flutter_port_taxi/main.dart';
 import 'package:flutter_port_taxi/pages/register.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../config/server_api.dart';
 import '../models/user.dart';
 import '../notifier_model/user_model.dart';
@@ -76,8 +77,8 @@ class _LogInState extends State<LogIn> {
             CustomFixedWidthElevatedButton(
               color: AppColor.blue,
               title: AppLocalizations.of(context)!.logIn,
-              onPressed: (){
-                _emailLogIn(context, emailController.text, passwordController.text);
+              onPressed: () async {
+                  _emailLogIn(context, emailController.text, passwordController.text);
                 },
             ),
 

@@ -14,6 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:ui';
 
+import 'ReserveDialog.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -102,7 +104,7 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: Container(
         color: const Color.fromARGB(255,253,252,252),
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        height: 222,
+        height: 280,
         child: Consumer<UserModel>(builder: (context, userModel, child){
           return statusCaller(userModel.statusCallerIndex);
         }),
@@ -243,7 +245,29 @@ class _HomeState extends State<Home> {
                   },
             child: Text( userModel.isCallTaxiClicked == false ? AppLocalizations.of(context)!.order : AppLocalizations.of(context)!.searchingForDrivers, style: const TextStyle(fontSize: 18),),
           ),
-        )
+        ),
+        const SizedBox(height: 10,),
+        SizedBox(
+          width: double.infinity,
+          height: 35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                elevation: 0,
+                backgroundColor: AppColor.red,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)
+                )
+            ),
+            onPressed:() async {
+              final confirmBack = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ReserveDialog(onAddress: 'onAddress', offAddress: 'offAddress');
+                  });
+            },
+            child: Text( AppLocalizations.of(context)!.reserve_order, style: const TextStyle(fontSize: 18),),
+          ),
+        ),
       ],
     );
   }
@@ -412,13 +436,23 @@ class _HomeState extends State<Home> {
   Future _postCreateCase() async {
     var userModel = context.read<UserModel>();
     String path = ServerApi.postNewCase;
+
+    String converAddress = '';
+    if (userModel.dropOffAddressController.text!=''){
+      if(window.locale.languageCode == 'zh'){
+        converAddress = await _getConvertAddress('en', userModel.dropOffAddressController.text);
+      }else{
+        converAddress = await _getConvertAddress('zh-TW', userModel.dropOffAddressController.text);
+      }
+    }
+
     try {
       final bodyParameters = {
         'on_address' : window.locale.languageCode == 'zh' ? userModel.pickUpAddressController.text : userModel.pickUpZhAddress,
-        'off_address': window.locale.languageCode == 'zh' ? userModel.dropOffAddressController.text : '',
+        'off_address': window.locale.languageCode == 'zh' ? userModel.dropOffAddressController.text : converAddress,
         'is_english': userModel.isEngDriverNeeded,
         'on_address_en': window.locale.languageCode == 'en' ? userModel.pickUpAddressController.text : userModel.pickUpEngAddress,
-        'off_address_en': window.locale.languageCode == 'en' ? userModel.dropOffAddressController.text : ''
+        'off_address_en': window.locale.languageCode == 'en' ? userModel.dropOffAddressController.text : converAddress,
       };
       print(bodyParameters);
 
@@ -497,6 +531,23 @@ class _HomeState extends State<Home> {
           break;
         }
         setState(() {});
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future _getConvertAddress(String outPutLanguage, String inPutLanguageAddress) async {
+    //outPutLanguage = zh-TW / en
+    String path = '${ServerApi.geoCodeApi}?address=$inPutLanguageAddress&key=$geocodingKey&language=$outPutLanguage';
+    print(path);
+    try {
+      final response = await http.get(Uri.parse(path));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        print(data['status']);
+        print('this is convert address: ' + data['results'][0]['formatted_address']);
+        return data['results'][0]['formatted_address'];
       }
     } catch (e) {
       print(e);

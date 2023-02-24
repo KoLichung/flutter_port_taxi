@@ -7,7 +7,8 @@
     "inputDropOffAddress": "輸入下車位置",
     "enterPickUpAddress": "請輸入您的上車地址！",
     "addressWrong": "地址有誤，請重新輸入!",
-    "order": "叫車",
+    "order": "直接叫車",
+    "reserve_order": "預約叫車",
     "my": "我的",
     "searchingForDrivers": "搜尋司機中...",
 

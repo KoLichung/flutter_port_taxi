@@ -9,6 +9,7 @@
   "enterPickUpAddress": "Please enter the pickup address!",
   "addressWrong": "Please enter the correct address!",
   "order": "Order",
+  "reserve_order": "Reserve Order",
   "my": "My",
   "searchingForDrivers": "searching for drivers",
 

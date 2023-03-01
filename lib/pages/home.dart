@@ -26,7 +26,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-
   String geocodingKey = 'AIzaSyCdP86OffSMXL82nbHA0l6K0W2xrdZ5xLk';
 
   double? currentLat;
@@ -259,10 +258,11 @@ class _HomeState extends State<Home> {
                 )
             ),
             onPressed:() async {
+              var userModel = context.read<UserModel>();
               final confirmBack = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return ReserveDialog(onAddress: 'onAddress', offAddress: 'offAddress');
+                    return ReserveDialog(onAddress: userModel.pickUpAddressController.text, offAddress: userModel.dropOffAddressController.text);
                   });
             },
             child: Text( AppLocalizations.of(context)!.reserve_order, style: const TextStyle(fontSize: 18),),

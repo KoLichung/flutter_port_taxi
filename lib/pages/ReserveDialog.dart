@@ -1,13 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../config/color.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'dart:ui';
+import 'package:http/http.dart' as http;
+
+import '../config/server_api.dart';
+import '../notifier_model/user_model.dart';
 
 
 class ReserveDialog extends StatefulWidget {
@@ -30,11 +39,13 @@ extension TimeOfDayConverter on TimeOfDay {
 
 class _ReserveDialogState extends State<ReserveDialog>{
 
+  String geocodingKey = 'AIzaSyCdP86OffSMXL82nbHA0l6K0W2xrdZ5xLk';
+
   TextEditingController pickUpAddressController = TextEditingController();
   TextEditingController dropOffAddressController = TextEditingController();
   final DateRangePickerController _bookingDateController = DateRangePickerController();
   DateTime bookingDate = DateTime.now();
-  TimeOfDay bookingTimeTimeOfDay = const TimeOfDay(hour: 09, minute: 0);
+  TimeOfDay bookingTimeTimeOfDay = TimeOfDay(hour: DateTime.now().hour+2, minute: 0);
 
   @override
   void initState() {
@@ -42,8 +53,8 @@ class _ReserveDialogState extends State<ReserveDialog>{
     super.initState();
     pickUpAddressController.text = widget.onAddress;
     dropOffAddressController.text = widget.offAddress;
-
   }
+
   @override
   Widget build(BuildContext context) {
    return AlertDialog(
@@ -65,8 +76,6 @@ class _ReserveDialogState extends State<ReserveDialog>{
          crossAxisAlignment: CrossAxisAlignment.start,
          mainAxisSize: MainAxisSize.min,
          children: [
-           // const Text('您的 ATM 繳款訊息如下：'),
-           // const Text('p.s 繳款完，請回填後5碼，才能為您對帳喔！'),
            Text(AppLocalizations.of(context)!.pickUpAddress, style: const TextStyle(color: AppColor.blue, fontSize: 12)),
            const SizedBox(height: 2,),
            Container(
@@ -156,12 +165,7 @@ class _ReserveDialogState extends State<ReserveDialog>{
            const SizedBox(height: 10,),
            Center(
              child: CustomOutlinedButton(color: Colors.green, title: "確認，並聯繫 WhatsApp 客服", onPressed: () async {
-               // send message to specific someone
-               var whatsappUrl = "https://wa.me/+886912585506?text=Hello";
-               if (!await launchUrl(Uri.parse(whatsappUrl))) {
-                 throw Exception('Could not launch $whatsappUrl');
-               }
-               Navigator.pop(context);
+               _postCreateCase();
              }),
            ),
            Center(
@@ -178,7 +182,6 @@ class _ReserveDialogState extends State<ReserveDialog>{
      backgroundColor: AppColor.red,
    );
   }
-
 
   bookingDatePicker(){
     return Center(
@@ -241,21 +244,96 @@ class _ReserveDialogState extends State<ReserveDialog>{
           child: child!,);
       },);
     if (picked != null && picked != bookingTimeTimeOfDay) {
-
-      if(picked.minute > 0 && picked.minute < 15){
-        bookingTimeTimeOfDay = TimeOfDay(hour: picked.hour, minute: 0);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("時間自動以30分鐘為單位調整！"),));
-      } else if ((picked.minute >= 15 && picked.minute <30) || (picked.minute > 30 && picked.minute <45)){
-        bookingTimeTimeOfDay = TimeOfDay(hour: picked.hour, minute: 30);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("時間自動以30分鐘為單位調整！"),));
-      } else if (picked.minute >= 45 && picked.minute <= 59) {
-        bookingTimeTimeOfDay = TimeOfDay(hour: picked.hour + 1, minute: 0);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("時間自動以30分鐘為單位調整！"),));
-      }else{
-        bookingTimeTimeOfDay = TimeOfDay(hour: picked.hour, minute: picked.minute);
-      }
-
+      bookingTimeTimeOfDay = TimeOfDay(hour: picked.hour, minute: picked.minute);
       setState(() {});
+    }
+  }
+
+  Future _postCreateCase() async {
+    var userModel = context.read<UserModel>();
+    String path = ServerApi.postNewCase;
+
+    String datString = DateFormat('yyyy-MM-dd').format(bookingDate);
+    String timeString = bookingTimeTimeOfDay.to24hours();
+
+    String convertAddress = '';
+    if (dropOffAddressController.text!=''){
+      if(window.locale.languageCode == 'zh'){
+        convertAddress = await _getConvertAddress('en', dropOffAddressController.text);
+      }else{
+        convertAddress = await _getConvertAddress('zh-TW', dropOffAddressController.text);
+      }
+    }
+
+    String onConvertAddress = '';
+    if (pickUpAddressController.text!=''){
+      if(window.locale.languageCode == 'zh'){
+        onConvertAddress = await _getConvertAddress('en', pickUpAddressController.text);
+      }else{
+        onConvertAddress = await _getConvertAddress('zh-TW', pickUpAddressController.text);
+      }
+    }
+
+    try {
+      final bodyParameters = {
+        'case_type': 'reserve',
+        'reserve_date_time': '$datString $timeString',
+        'on_address' : window.locale.languageCode == 'zh' ? pickUpAddressController.text : onConvertAddress,
+        'off_address': window.locale.languageCode == 'zh' ? dropOffAddressController.text : convertAddress,
+        'is_english': userModel.isEngDriverNeeded,
+        'on_address_en': window.locale.languageCode == 'en' ? pickUpAddressController.text : onConvertAddress,
+        'off_address_en': window.locale.languageCode == 'en' ? dropOffAddressController.text : convertAddress,
+      };
+      print(bodyParameters);
+
+      final response = await http.post(ServerApi.standard(path: path),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Token ${userModel.token!}'
+          },
+          body: jsonEncode(bodyParameters)
+      );
+
+      print(response.body);
+
+      if(response.statusCode == 200){
+        print('成功叫車');
+        // send message to specific someone
+        String text = "您好，我是 ${userModel.user!.name} 剛剛預約了一個訂單。";
+        var whatsappUrl = "https://wa.me/+886912585506?text=$text";
+        if (!await launchUrl(Uri.parse(whatsappUrl))) {
+          throw Exception('Could not launch $whatsappUrl');
+        }
+
+        userModel.dropOffAddressController.text = '';
+        userModel.pickUpAddressController.text = '';
+
+        Navigator.pop(context);
+      }else{
+        print(response.statusCode);
+        ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addressWrong)));
+      }
+    } catch (e) {
+      print(e);
+      return "error";
+    }
+  }
+
+  Future _getConvertAddress(String outPutLanguage, String inPutLanguageAddress) async {
+    //outPutLanguage = zh-TW / en
+    String path = '${ServerApi.geoCodeApi}?address=$inPutLanguageAddress&key=$geocodingKey&language=$outPutLanguage';
+    print(path);
+    try {
+      final response = await http.get(Uri.parse(path));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        print(data['status']);
+        print('this is convert address: ' + data['results'][0]['formatted_address']);
+        return data['results'][0]['formatted_address'];
+      }
+    } catch (e) {
+      print(e);
+      return inPutLanguageAddress;
     }
   }
 

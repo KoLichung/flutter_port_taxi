@@ -41,7 +41,7 @@ class _FeedbackDialogState extends State<FeedbackDialog>{
       title: Container(
         width: 300,
         padding: const EdgeInsets.all(10),
-        color: AppColor.red,
+        color: AppColor.blue,
         child: const Text(
           '乘車回饋',
           style: TextStyle(color: Colors.white),
@@ -50,36 +50,53 @@ class _FeedbackDialogState extends State<FeedbackDialog>{
       contentPadding: const EdgeInsets.all(0),
       content: Container(
         color: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('感謝您的搭乘,請給我們回饋或建議：', style: const TextStyle(color: AppColor.blue, fontSize: 14)),
+            Text('感謝您的搭乘，請給我們回饋或建議：'),
             const SizedBox(height: 10,),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0,5,0,0),
-              child: TextField(
-                maxLines: 8,
-                controller: feedbackController,
-                decoration: const InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1,color: AppColor.grey),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1,color: AppColor.grey),
-                  ),
-                  hintText: '請輸入您的回饋或意見',
-                  hintStyle: TextStyle(color: Colors.grey),
+            TextField(
+              maxLines: 8,
+              controller: feedbackController,
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.all(10),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1,color: AppColor.grey),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1,color: AppColor.grey),
+                ),
+                hintText: '請輸入您的回饋或意見',
+                hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
               ),
             ),
             const SizedBox(height: 10,),
             Center(
-              child: CustomOutlinedButton(color: Colors.green, title: "確認送出", onPressed: () async {
-                _putCaseFeedback(widget.caseId, feedbackController.text);
-              }),
+              child: ElevatedButton(
+                onPressed: ()async{
+                  _putCaseFeedback(widget.caseId, feedbackController.text);
+                },
+                style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                    elevation: 0,
+                    backgroundColor: AppColor.lightBlue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)
+                    )
+                ),
+                child: Text('確認送出'),
+              ),
             ),
+            // Center(
+            //   child: CustomOutlinedButton(
+            //       color: Colors.green,
+            //       title: "確認送出",
+            //       onPressed: () async {
+            //     _putCaseFeedback(widget.caseId, feedbackController.text);
+            //       }),
+            // ),
             Center(
               child:TextButton(
                 child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),),

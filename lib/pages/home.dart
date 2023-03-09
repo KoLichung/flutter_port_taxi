@@ -3,6 +3,7 @@ import 'package:flutter_port_taxi/pages/feedback_dialog.dart';
 import 'package:flutter_port_taxi/pages/reserve_dialog.dart';
 import 'package:flutter_port_taxi/widget/car_number_tag.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import '../config/color.dart';
 import '../config/server_api.dart';
@@ -250,14 +251,25 @@ class _HomeState extends State<Home> {
         SizedBox(
           width: double.infinity,
           height: 35,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                elevation: 0,
-                backgroundColor: AppColor.red,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)
-                )
-            ),
+          child: userModel.isCallTaxiClicked
+              ? CustomOutlinedButton(
+            onPressed:() async {
+              var whatsappUrl = "https://wa.me/+886912585506";
+              if (!await launchUrl(Uri.parse(whatsappUrl))) {
+                throw Exception('Could not launch $whatsappUrl');
+              }
+            },
+            color:  Colors.green,
+            title: "聯繫 WhatsApp 客服",
+          )
+              : ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: AppColor.red,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)
+                    )
+                ),
             onPressed:() async {
               var userModel = context.read<UserModel>();
               final confirmBack = await showDialog(
@@ -268,6 +280,16 @@ class _HomeState extends State<Home> {
                         offAddress: userModel.dropOffAddressController.text);
                   });
             },
+            // onPressed:() async {
+            //   var userModel = context.read<UserModel>();
+            //   final confirmBack = await showDialog(
+            //       context: context,
+            //       builder: (BuildContext context) {
+            //         return ReserveDialog(
+            //             onAddress: userModel.pickUpAddressController.text,
+            //             offAddress: userModel.dropOffAddressController.text);
+            //       });
+            // },
             child: Text( AppLocalizations.of(context)!.reserve_order, style: const TextStyle(fontSize: 18),),
           ),
         ),
@@ -304,6 +326,23 @@ class _HomeState extends State<Home> {
           const SizedBox(height: 10,),
           Flexible(child: Text('${AppLocalizations.of(context)!.pickUpAddress}：${userModel.pickUpAddressController.text}')),
           // const Spacer(flex: 1,),
+          const SizedBox(height: 10,),
+          userModel.isCallTaxiClicked
+              ? SizedBox(
+                width: double.infinity,
+                height: 35,
+                child: CustomOutlinedButton(
+                          onPressed:() async {
+                              var whatsappUrl = "https://wa.me/+886912585506";
+                              if (!await launchUrl(Uri.parse(whatsappUrl))) {
+                                throw Exception('Could not launch $whatsappUrl');
+                              }
+                          },
+                          color:  Colors.green,
+                          title: "聯繫 WhatsApp 客服",
+                        ),
+                            )
+              :const SizedBox()
         ],
       ),
     );
@@ -311,7 +350,6 @@ class _HomeState extends State<Home> {
 
   inTaxiLayout(){
     var userModel = context.read<UserModel>();
-
     return Container(
       alignment: Alignment.center,
       child: Column(
@@ -332,8 +370,25 @@ class _HomeState extends State<Home> {
           const SizedBox(height: 10,),
           userModel.dropOffAddressController.text.isNotEmpty
               ? Text('${AppLocalizations.of(context)!.dropOffAddress}：${userModel.dropOffAddressController.text}')
-              : Text('${AppLocalizations.of(context)!.dropOffAddress}：')
+              : Text('${AppLocalizations.of(context)!.dropOffAddress}：'),
           // const Spacer(flex: 1,),
+          const SizedBox(height: 10,),
+          userModel.isCallTaxiClicked
+              ? SizedBox(
+            width: double.infinity,
+            height: 35,
+            child: CustomOutlinedButton(
+              onPressed:() async {
+                var whatsappUrl = "https://wa.me/+886912585506";
+                if (!await launchUrl(Uri.parse(whatsappUrl))) {
+                  throw Exception('Could not launch $whatsappUrl');
+                }
+              },
+              color:  Colors.green,
+              title: "聯繫 WhatsApp 客服",
+            ),
+          )
+              :const SizedBox()
         ],
       ),
     );
@@ -351,6 +406,7 @@ class _HomeState extends State<Home> {
   }
 
   arrivedDestinationLayout(){
+    var userModel = context.read<UserModel>();
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -360,26 +416,48 @@ class _HomeState extends State<Home> {
             // alignment: Alignment.center,
             child: Text(AppLocalizations.of(context)!.arrivedMsg, style: const TextStyle(color: AppColor.blue, fontWeight: FontWeight.bold, fontSize: 18),),
           ),
-          CustomOutlinedButton(
-              color: AppColor.blue,
-              title: AppLocalizations.of(context)!.ok,
-              onPressed: (){
-                setState(() {
-                  _showFeedBackDialog();
+          const SizedBox(height: 20,),
+          SizedBox(
+            width: double.infinity,
+            height: 35,
+            child: CustomOutlinedButton(
+                color: AppColor.blue,
+                title: AppLocalizations.of(context)!.ok,
+                onPressed: (){
+                  setState(() {
+                    _showFeedBackDialog();
 
-                  var userModel = context.read<UserModel>();
-                  userModel.statusCallerIndex = 0;
-                  userModel.isCallTaxiClicked = false;
-                  userModel.isAllowGetLocation = true;
-                  userModel.isEngDriverNeeded = false;
-                  userModel.isTextFieldEnable = true;
-                  userModel.pickUpAddressController.text = '';
-                  userModel.dropOffAddressController.text = '';
+                    var userModel = context.read<UserModel>();
+                    userModel.statusCallerIndex = 0;
+                    userModel.isCallTaxiClicked = false;
+                    userModel.isAllowGetLocation = true;
+                    userModel.isEngDriverNeeded = false;
+                    userModel.isTextFieldEnable = true;
+                    userModel.pickUpAddressController.text = '';
+                    userModel.dropOffAddressController.text = '';
 
-                  _taskTimer!.cancel();
-                });
-                _getUserLocation();
-              })
+                    _taskTimer!.cancel();
+                  });
+                  _getUserLocation();
+                }),
+          ),
+          const SizedBox(height: 10,),
+          userModel.isCallTaxiClicked
+              ? SizedBox(
+            width: double.infinity,
+            height: 35,
+            child: CustomOutlinedButton(
+              onPressed:() async {
+                var whatsappUrl = "https://wa.me/+886912585506";
+                if (!await launchUrl(Uri.parse(whatsappUrl))) {
+                  throw Exception('Could not launch $whatsappUrl');
+                }
+              },
+              color:  Colors.green,
+              title: "聯繫 WhatsApp 客服",
+            ),
+          )
+              :const SizedBox()
         ],
       ),
     );

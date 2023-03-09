@@ -91,7 +91,7 @@ class _ReserveDialogState extends State<ReserveDialog>{
                  decoration: InputDecoration(
                      contentPadding: const EdgeInsets.only(bottom: 14),
                      hintStyle: const TextStyle(fontSize: 14),
-                     hintText: AppLocalizations.of(context)!.pressRightBtnGetAddress,
+                     hintText: "上車位置",
                      border: InputBorder.none),
                )
            ),

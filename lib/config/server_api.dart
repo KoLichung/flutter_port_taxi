@@ -16,6 +16,7 @@ class ServerApi{
   static const geoCodeApi = 'https://maps.googleapis.com/maps/api/geocode/json';
   static const postNewCase = '/api/post_new_case';
   static const getCurrentCaseState = '/api/get_current_case_state';
+  static const putCaseFeedback = '/api/put_case_feedback';
 
   static const userCases = '/api/user_cases/';
 

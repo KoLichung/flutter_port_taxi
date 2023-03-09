@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_port_taxi/pages/feedback_dialog.dart';
+import 'package:flutter_port_taxi/pages/reserve_dialog.dart';
 import 'package:flutter_port_taxi/widget/car_number_tag.dart';
 import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
 import 'dart:async';
@@ -14,7 +16,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:ui';
 
-import 'ReserveDialog.dart';
 
 
 class Home extends StatefulWidget {
@@ -33,7 +34,7 @@ class _HomeState extends State<Home> {
 
   Timer? _taskTimer;
 
-
+  bool isFeedbackDialogShowing = false;
 
   void _getUserLocation() async {
     LocationPermission permission;
@@ -262,7 +263,9 @@ class _HomeState extends State<Home> {
               final confirmBack = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return ReserveDialog(onAddress: userModel.pickUpAddressController.text, offAddress: userModel.dropOffAddressController.text);
+                    return ReserveDialog(
+                        onAddress: userModel.pickUpAddressController.text,
+                        offAddress: userModel.dropOffAddressController.text);
                   });
             },
             child: Text( AppLocalizations.of(context)!.reserve_order, style: const TextStyle(fontSize: 18),),
@@ -336,6 +339,17 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Future<void> _showFeedBackDialog() async {
+    var userModel = context.read<UserModel>();
+
+     await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return FeedbackDialog(caseId: userModel.currentCaseId!);
+        });
+    userModel.currentCaseId = null;
+  }
+
   arrivedDestinationLayout(){
     return Center(
       child: Column(
@@ -351,6 +365,8 @@ class _HomeState extends State<Home> {
               title: AppLocalizations.of(context)!.ok,
               onPressed: (){
                 setState(() {
+                  _showFeedBackDialog();
+
                   var userModel = context.read<UserModel>();
                   userModel.statusCallerIndex = 0;
                   userModel.isCallTaxiClicked = false;
@@ -359,7 +375,7 @@ class _HomeState extends State<Home> {
                   userModel.isTextFieldEnable = true;
                   userModel.pickUpAddressController.text = '';
                   userModel.dropOffAddressController.text = '';
-                  userModel.currentCaseId = null;
+
                   _taskTimer!.cancel();
                 });
                 _getUserLocation();
@@ -384,7 +400,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-
   Future getHttpConvertToZhOnAddress(double lat, double long) async{
     var userModel = context.read<UserModel>();
     //如果地址要用英文顯示，要把 &language=zh-TW 刪掉
@@ -408,11 +423,10 @@ class _HomeState extends State<Home> {
     }
   }
 
-
   //如果是中文語系，他輸入中文地址，要把中文地址轉成英文並存回給 server
   //如果不是中文語系，app是英文語系，會輸入英文地址，要把英文地址轉成中文並存回給 server
   //dropOff address 可以為空
- Future getHttpConvertToEngOnAddress(double lat, double long) async{
+  Future getHttpConvertToEngOnAddress(double lat, double long) async{
     var userModel = context.read<UserModel>();
     String path = '${ServerApi.currentAddress}$lat,$long&key=$geocodingKey';
     try {
@@ -453,6 +467,7 @@ class _HomeState extends State<Home> {
         'is_english': userModel.isEngDriverNeeded,
         'on_address_en': window.locale.languageCode == 'en' ? userModel.pickUpAddressController.text : userModel.pickUpEngAddress,
         'off_address_en': window.locale.languageCode == 'en' ? userModel.dropOffAddressController.text : converAddress,
+        'case_type': 'direct',
       };
       print(bodyParameters);
 
@@ -464,7 +479,8 @@ class _HomeState extends State<Home> {
           body: jsonEncode(bodyParameters)
       );
 
-      print(response.body);
+      // print(response.body);
+      _printLongString(response.body);
 
       if(response.statusCode == 200){
         print('成功叫車');
@@ -554,6 +570,10 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void _printLongString(String text) {
+    final RegExp pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
+    pattern.allMatches(text).forEach((RegExpMatch match) => print(match.group(0)));
+  }
 }
 
 

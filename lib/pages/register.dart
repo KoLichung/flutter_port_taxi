@@ -183,7 +183,7 @@ class _RegisterState extends State<Register> {
         return token;
       }else{
         print(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("無法取得Token！"),));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.unableGettingToken),));
         return null;
       }
     } catch (e) {

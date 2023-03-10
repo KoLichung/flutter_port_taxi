@@ -19,6 +19,19 @@
     "arrivedMsg": "已抵達目的地，感謝您的搭乘",
     "ok": "確認",
 
+    "feedback": "乘車回饋",
+    "thankYouAndGiveFeedback": "感謝您的搭乘，請給我們回饋或建議：",
+    "enterFeedbackComments": "請輸入您的回饋或意見",
+    "send": "確認送出",
+
+    "bookingDate": "預約日期",
+    "bookingTime": "預約時間",
+    "confirmAndContactCustomerService": "確認，並聯繫 WhatsApp 客服",
+    "contactCustomerService": "聯繫 WhatsApp 客服",
+
+    "hiIAm": "您好，我是 ",
+    "iBookedACar": "剛剛預約了一個訂單。",
+
     "logOut": "登出",
     "logIn": "登入",
 
@@ -38,9 +51,13 @@
     "updatePasswordSuccess":"成功更新密碼",
     "updatePasswordFailed": "無法更新資料",
     "updateDataSuccess": "資料成功更新",
+    "enterOldPassword": "請輸入舊密碼！",
+    "enterNewPassword": "請輸入新密碼！",
 
     "dontHaveAccount": "還沒有帳號？",
     "register": "註冊",
+
+    "unableGettingToken": "無法取得Token！",
 
     "emailPasswordError": "Email或密碼錯誤！",
 
@@ -60,8 +77,11 @@
     "delete": "確認刪除",
 
     "userDeleteSuccess": "成功刪除使用者!",
-    "userDeleteFailed": "未成功刪除使用者!請聯繫管理員~"
+    "userDeleteFailed": "未成功刪除使用者!請聯繫管理員~",
 
-
-
+    "rideDetail": "乘車明細",
+    "car": "乘車：",
+    "notSpecified": "未指名",
+    "fare": "車資",
+    "noData": "尚無資料"
 }

@@ -260,7 +260,7 @@ class _HomeState extends State<Home> {
               }
             },
             color:  Colors.green,
-            title: "聯繫 WhatsApp 客服",
+            title: AppLocalizations.of(context)!.contactCustomerService,
           )
               : ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -280,16 +280,6 @@ class _HomeState extends State<Home> {
                         offAddress: userModel.dropOffAddressController.text);
                   });
             },
-            // onPressed:() async {
-            //   var userModel = context.read<UserModel>();
-            //   final confirmBack = await showDialog(
-            //       context: context,
-            //       builder: (BuildContext context) {
-            //         return ReserveDialog(
-            //             onAddress: userModel.pickUpAddressController.text,
-            //             offAddress: userModel.dropOffAddressController.text);
-            //       });
-            // },
             child: Text( AppLocalizations.of(context)!.reserve_order, style: const TextStyle(fontSize: 18),),
           ),
         ),
@@ -339,7 +329,7 @@ class _HomeState extends State<Home> {
                               }
                           },
                           color:  Colors.green,
-                          title: "聯繫 WhatsApp 客服",
+                          title: AppLocalizations.of(context)!.contactCustomerService,
                         ),
                             )
               :const SizedBox()
@@ -357,7 +347,7 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // const Spacer(flex: 1,),
-          Text('${AppLocalizations.of(context)!.driver}：${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          Text('${AppLocalizations.of(context)!.driver}${userModel.rideCase?.driverName}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           const SizedBox(height: 10,),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -385,7 +375,7 @@ class _HomeState extends State<Home> {
                 }
               },
               color:  Colors.green,
-              title: "聯繫 WhatsApp 客服",
+              title: AppLocalizations.of(context)!.contactCustomerService,
             ),
           )
               :const SizedBox()
@@ -454,7 +444,7 @@ class _HomeState extends State<Home> {
                 }
               },
               color:  Colors.green,
-              title: "聯繫 WhatsApp 客服",
+              title: AppLocalizations.of(context)!.contactCustomerService,
             ),
           )
               :const SizedBox()

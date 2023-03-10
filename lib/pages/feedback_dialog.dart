@@ -1,22 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_port_taxi/widget/custom_outlined_button.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../config/color.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:syncfusion_flutter_core/theme.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
-
 import '../config/server_api.dart';
 import '../notifier_model/user_model.dart';
+
 
 
 class FeedbackDialog extends StatefulWidget {
@@ -36,16 +28,14 @@ class _FeedbackDialogState extends State<FeedbackDialog>{
 
   @override
   Widget build(BuildContext context) {
+
     return AlertDialog(
       titlePadding: const EdgeInsets.all(0),
       title: Container(
         width: 300,
         padding: const EdgeInsets.all(10),
         color: AppColor.blue,
-        child: const Text(
-          '乘車回饋',
-          style: TextStyle(color: Colors.white),
-        ),
+        child: Text(AppLocalizations.of(context)!.feedback,style: const TextStyle(color: Colors.white),),
       ),
       contentPadding: const EdgeInsets.all(0),
       content: Container(
@@ -55,21 +45,21 @@ class _FeedbackDialogState extends State<FeedbackDialog>{
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('感謝您的搭乘，請給我們回饋或建議：'),
+            Text(AppLocalizations.of(context)!.thankYouAndGiveFeedback),
             const SizedBox(height: 10,),
             TextField(
               maxLines: 8,
               controller: feedbackController,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.all(10),
-                enabledBorder: OutlineInputBorder(
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(10),
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(width: 1,color: AppColor.grey),
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder:const  OutlineInputBorder(
                   borderSide: BorderSide(width: 1,color: AppColor.grey),
                 ),
-                hintText: '請輸入您的回饋或意見',
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
+                hintText: AppLocalizations.of(context)!.enterFeedbackComments,
+                hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
             ),
             const SizedBox(height: 10,),
@@ -86,17 +76,9 @@ class _FeedbackDialogState extends State<FeedbackDialog>{
                         borderRadius: BorderRadius.circular(20)
                     )
                 ),
-                child: Text('確認送出'),
+                child: Text(AppLocalizations.of(context)!.send),
               ),
             ),
-            // Center(
-            //   child: CustomOutlinedButton(
-            //       color: Colors.green,
-            //       title: "確認送出",
-            //       onPressed: () async {
-            //     _putCaseFeedback(widget.caseId, feedbackController.text);
-            //       }),
-            // ),
             Center(
               child:TextButton(
                 child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),),

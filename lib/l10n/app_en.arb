@@ -20,6 +20,19 @@
   "arrivedMsg": "We have arrived at our destination, thank you for your ride",
   "ok": "OK",
 
+  "feedback": "feedback",
+  "thankYouAndGiveFeedback": "Thank you for your ride, please give us feedback or suggestions:",
+  "enterFeedbackComments": "Please enter your feedback or comments",
+  "send": "send",
+
+  "bookingDate": "booking date",
+  "bookingTime": "booking time",
+  "confirmAndContactCustomerService": "Confirm and Contact Support through WhatsApp",
+  "contactCustomerService": "Contact Support through WhatsApp",
+
+  "hiIAm": "Hi, I'm ",
+  "iBookedACar": "I just placed an order",
+
   "logOut": "LogOut",
   "logIn": "LogIn",
 
@@ -38,11 +51,15 @@
   "updatePasswordSuccess":"Successfully updated password",
   "updatePasswordFailed": "Unable to update information!",
   "updateDataSuccess": "Data updated successfully",
-
+  "enterOldPassword": "Please enter the old password！",
+  "enterNewPassword": "Please enter a new password！",
 
 
   "dontHaveAccount": "Don't have an account?",
   "register": "Register",
+
+  "unableGettingToken": "Unable to get Token",
+
 
   "emailPasswordError": "Email or Password error!",
 
@@ -62,7 +79,11 @@
   "delete": "delete",
 
   "userDeleteSuccess": "Successfully deleted user!",
-  "userDeleteFailed": "Failed to delete user, please contact administrator!"
+  "userDeleteFailed": "Failed to delete user, please contact administrator!",
 
-
+  "rideDetail": "Ride Detail",
+  "car": "Car:",
+  "notSpecified": "Not Specified",
+  "fare": "Fare",
+  "noData": "No Data"
 }

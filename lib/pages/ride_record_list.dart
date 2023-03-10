@@ -8,7 +8,8 @@ import '../config/server_api.dart';
 import '../models/ride_case.dart';
 import '../notifier_model/user_model.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class RideRecordList extends StatefulWidget {
   const RideRecordList({Key? key}) : super(key: key);
@@ -34,7 +35,7 @@ class _RideRecordListState extends State<RideRecordList> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: const Text('乘車紀錄'),
+        title: Text(AppLocalizations.of(context)!.rideRecord),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColor.blue,))

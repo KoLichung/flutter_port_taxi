@@ -11,7 +11,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../config/color.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 
@@ -63,9 +62,9 @@ class _ReserveDialogState extends State<ReserveDialog>{
        width: 300,
        padding: const EdgeInsets.all(10),
        color: AppColor.red,
-       child: const Text(
-         '預約叫車',
-         style: TextStyle(color: Colors.white),
+       child: Text(
+         AppLocalizations.of(context)!.reserve_order,
+         style: const TextStyle(color: Colors.white),
        ),
      ),
      contentPadding: const EdgeInsets.all(0),
@@ -91,7 +90,7 @@ class _ReserveDialogState extends State<ReserveDialog>{
                  decoration: InputDecoration(
                      contentPadding: const EdgeInsets.only(bottom: 14),
                      hintStyle: const TextStyle(fontSize: 14),
-                     hintText: "上車位置",
+                     hintText: AppLocalizations.of(context)!.pickUpAddress,
                      border: InputBorder.none),
                )
            ),
@@ -117,7 +116,7 @@ class _ReserveDialogState extends State<ReserveDialog>{
                )
            ),
            const SizedBox(height: 10,),
-           Text('預約日期', style: const TextStyle(color: AppColor.blue, fontSize: 12)),
+           Text(AppLocalizations.of(context)!.bookingDate, style: const TextStyle(color: AppColor.blue, fontSize: 12)),
            const SizedBox(height: 2,),
            Container(
              height: 35,
@@ -142,7 +141,7 @@ class _ReserveDialogState extends State<ReserveDialog>{
              ),
            ),
            const SizedBox(height: 10,),
-           Text('預約時間', style: const TextStyle(color: AppColor.blue, fontSize: 12)),
+           Text(AppLocalizations.of(context)!.bookingTime, style: const TextStyle(color: AppColor.blue, fontSize: 12)),
            const SizedBox(height: 2,),
            Container(
              height: 35,
@@ -164,7 +163,7 @@ class _ReserveDialogState extends State<ReserveDialog>{
            ),
            const SizedBox(height: 10,),
            Center(
-             child: CustomOutlinedButton(color: Colors.green, title: "確認，並聯繫 WhatsApp 客服", onPressed: () async {
+             child: CustomOutlinedButton(color: Colors.green, title: AppLocalizations.of(context)!.confirmAndContactCustomerService, onPressed: () async {
                _postCreateCase();
              }),
            ),
@@ -219,8 +218,8 @@ class _ReserveDialogState extends State<ReserveDialog>{
               });
             },
             showActionButtons: true,
-            cancelText: '取消',
-            confirmText: '確定',
+            cancelText: AppLocalizations.of(context)!.cancel,
+            confirmText: AppLocalizations.of(context)!.ok,
             onSubmit: (Object? value, ) {
               // print('chosen duration: $value');
               Navigator.pop(context);
@@ -299,7 +298,7 @@ class _ReserveDialogState extends State<ReserveDialog>{
       if(response.statusCode == 200){
         print('成功叫車');
         // send message to specific someone
-        String text = "您好，我是 ${userModel.user!.name} 剛剛預約了一個訂單。";
+        String text = "${AppLocalizations.of(context)!.hiIAm} ${userModel.user!.name} ${AppLocalizations.of(context)!.iBookedACar}";
         var whatsappUrl = "https://wa.me/+886912585506?text=$text";
         if (!await launchUrl(Uri.parse(whatsappUrl))) {
           throw Exception('Could not launch $whatsappUrl');

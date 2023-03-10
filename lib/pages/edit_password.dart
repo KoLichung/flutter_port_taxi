@@ -48,9 +48,9 @@ class _EditPasswordState extends State<EditPassword> {
               onPressed: (){
                 var userModel = context.read<UserModel>();
                 if(oldPasswordController.text =='' ){
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("請輸入舊密碼！"),));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.enterOldPassword),));
                 }else if(newPasswordController.text == ''){
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("請輸入新密碼！"),));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.enterNewPassword),));
                 }else{
                   _putUpdateUserPassword(userModel.token!, oldPasswordController.text, newPasswordController.text);
                 }
